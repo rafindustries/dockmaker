@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avaliação de Desempenho e Relatórios | DockMaker PRO</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            blue: '#0A2540',     /* Azul Marítimo Principal */
+                            blueDark: '#04101A',
+                            blueLight: '#1D4ED8',/* Azul Marítimo Destaque */
+                            yellow: '#FFB900',   /* Amarelo Secundário */
+                            yellowHover: '#E0A100',
+                            white: '#FFFFFF',
+                            light: '#F4F7F9'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Chart.js para Gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome para Ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Favicon SVG Transparente Embutido -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 38' fill='none'><rect x='1' y='1' width='28' height='36' rx='4' stroke='%230D6EFD' stroke-width='2.5' fill='none'/><path d='M21 1V9H29' stroke='%230D6EFD' stroke-width='2.5'/><path d='M15 12V26M9 17H21M9 17L6 23H12L9 17ZM21 17L18 23H24L21 17ZM12 27H18' stroke='white' stroke-width='2' stroke-linecap='round'/><path d='M20 27L24 31L32 21' stroke='%23FFB900' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            body { background-color: white !important; color: black !important; }
+            .print-shadow { box-shadow: none !important; border: 1px solid #cbd5e1 !important; }
+        }
+    </style>
+</head>
+<body class="bg-brand-light text-slate-800 h-full flex flex-col font-sans">
+
+    <!-- Script de Proteção de Rota -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDKUovo_4RrB8Igv8jJLEG31E43NB4Uwwk",
+            authDomain: "dockmaker-bd8eb.firebaseapp.com",
+            projectId: "dockmaker-bd8eb",
+            storageBucket: "dockmaker-bd8eb.firebasestorage.app",
+            messagingSenderId: "27485576136",
+            appId: "1:27485576136:web:f3112e697068b80a5f3efd",
+            measurementId: "G-C4MN1FRMXX"
+        };
+        try { firebase.initializeApp(firebaseConfig); } catch(e) {}
+
+        firebase.auth().onAuthStateChanged((user) => {
+            if (!user) {
+                alert("Acesso restrito! Por favor, faça login para aceder a esta ferramenta.");
+                window.location.href = "index.html";
+            }
+        });
+
+        function voltarAoMenu() {
+            window.location.href = "index.html";
+        }
+    </script>
+
+    <!-- CABEÇALHO DA EMPRESA -->
+    <header class="bg-brand-blue text-white shadow-md no-print">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <button onclick="voltarAoMenu()" class="p-2 text-slate-300 hover:text-white hover:bg-brand-blueDark rounded-xl transition-colors" title="Voltar ao Menu Principal">
+                    <i class="fa-solid fa-arrow-left text-lg"></i>
+                </button>
+                <div class="bg-brand-yellow text-brand-blue p-3 rounded-lg shadow font-bold text-xl">
+                    <i class="fa-solid fa-gauge-high"></i>
+                </div>
+                <div>
+                    <!-- CÓDIGO DO LOGOTIPO SVG PROFISSIONAL -->
+                    <a href="index.html" class="d-inline-flex align-items-center text-decoration-none">
+                        <svg width="220" height="42" viewBox="0 0 220 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="2" y="2" width="28" height="36" rx="4" stroke="#e0effe" stroke-width="2.2" fill="none"/>
+                            <path d="M22 2V10H30" stroke="#3b82f6" stroke-width="2.2" stroke-linejoin="round"/>
+                            <path d="M16 13V27M10 18H22M10 18L7 24H13L10 18ZM22 18L19 24H25L22 18ZM13 28H19" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+                            <path d="M22 28L26 32L34 22" stroke="#FFB900" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                            <text x="44" y="27" font-family="'Segoe UI', Roboto, sans-serif" font-weight="800" font-size="20" fill="white">DockMaker</text>
+                            <text x="160" y="27" font-family="'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="20" fill="#3b82f6">PRO</text>
+                            <line x1="160" y1="31" x2="202" y2="31" stroke="#FFB900" stroke-width="2.5" stroke-linecap="round"/>
+                        </svg>
+                    </a>
+                    <p class="text-xs text-brand-yellow font-semibold uppercase tracking-wider">Sistema Personalizado de Desempenho e Relatórios</p>
+                </div>
+            </div>
+            
+            <!-- SELETOR DE MÊS / PERÍODO DE REFERÊNCIA -->
+            <div class="flex items-center gap-3 bg-brand-blueDark px-4 py-2 rounded-lg border border-brand-yellow/30">
+                <span class="text-xs text-slate-300">Período de Referência:</span>
+                <select id="select-mes-referencia" onchange="mudarPeriodoReferencia()" class="bg-brand-blue text-brand-yellow font-bold text-sm rounded px-2 py-1 outline-none border border-brand-yellow/40">
+                    <option value="todos">📊 Visão Geral (Todo o Tempo)</option>
+                    <option value="2026-09">Setembro / 2026</option>
+                    <option value="2026-10" selected>Outubro / 2026</option>
+                    <option value="2026-11">Novembro / 2026</option>
+                    <option value="2026-12">Dezembro / 2026</option>
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <!-- NAVEGAÇÃO DE ABAS -->
+    <nav class="bg-brand-blueDark text-white shadow-inner no-print border-t border-brand-blue/50">
+        <div class="max-w-7xl mx-auto px-4 flex overflow-x-auto gap-2 py-2">
+            <button onclick="switchTab('dashboard')" id="btn-tab-dashboard" class="px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 bg-brand-yellow text-brand-blue shadow transition">
+                <i class="fa-solid fa-chart-pie"></i> Dashboard Geral
+            </button>
+            <button onclick="switchTab('avaliacoes')" id="btn-tab-avaliacoes" class="px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 bg-brand-blue/50 text-white hover:bg-brand-blue transition">
+                <i class="fa-solid fa-users-gear"></i> Gestão & Notas da Equipe
+            </button>
+            <button onclick="switchTab('relatorio-completo')" id="btn-tab-relatorio-completo" class="px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 bg-brand-blue/50 text-white hover:bg-brand-blue transition">
+                <i class="fa-solid fa-file-lines"></i> Relatório Completo (Operacional)
+            </button>
+            <button onclick="switchTab('relatorio-adm')" id="btn-tab-relatorio-adm" class="px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 bg-brand-blue/50 text-white hover:bg-brand-blue transition">
+                <i class="fa-solid fa-file-invoice-dollar"></i> Relatório Otimizado (Administrativo)
+            </button>
+        </div>
+    </nav>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 overflow-y-auto">
+
+        <!-- CONFIGURAÇÃO DA EMPRESA E ASSINATURAS (NOVO PAINEL) -->
+        <section class="bg-white p-5 rounded-xl shadow mb-6 no-print border border-slate-200">
+            <div class="flex items-center justify-between mb-3 border-b pb-2 cursor-pointer" onclick="toggleConfigEmpresa()">
+                <h3 class="font-bold text-brand-blue text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-building text-brand-yellow"></i> Dados da Empresa & Assinantes dos Relatórios
+                </h3>
+                <span class="text-xs text-brand-blueLight font-semibold" id="btn-toggle-config"><i class="fa-solid fa-chevron-down mr-1"></i> Editar Informações</span>
+            </div>
+            
+            <div id="painel-config-empresa" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Nome da Empresa / Organização:</label>
+                    <input type="text" id="cfg-nome-empresa" oninput="salvarConfigEmpresa()" placeholder="Ex: Minha Empresa Ltda" class="w-full bg-brand-light border border-slate-300 rounded px-3 py-1.5 text-xs font-bold text-brand-blue focus:ring-2 focus:ring-brand-blue outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Subtítulo / Descrição do Relatório:</label>
+                    <input type="text" id="cfg-subtitulo-empresa" oninput="salvarConfigEmpresa()" placeholder="Ex: Avaliação de Desempenho e Metas" class="w-full bg-brand-light border border-slate-300 rounded px-3 py-1.5 text-xs font-bold text-brand-blue focus:ring-2 focus:ring-brand-blue outline-none">
+                </div>
+
+                <!-- Assinatura 1 -->
+                <div class="p-3 bg-brand-light rounded border border-slate-200 space-y-2">
+                    <p class="text-xs font-bold text-brand-blue"><i class="fa-solid fa-file-signature mr-1"></i> Signatário 1 (Esquerda)</p>
+                    <input type="text" id="cfg-ass1-nome" oninput="salvarConfigEmpresa()" placeholder="Nome (Ex: João Silva)" class="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs">
+                    <input type="text" id="cfg-ass1-setor" oninput="salvarConfigEmpresa()" placeholder="Setor/Cargo (Ex: Supervisor de Produção)" class="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs">
+                    <input type="text" id="cfg-ass1-titulo" oninput="salvarConfigEmpresa()" placeholder="Rótulo da Linha (Ex: Assinatura do Responsável)" class="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs">
+                </div>
+
+                <!-- Assinatura 2 -->
+                <div class="p-3 bg-brand-light rounded border border-slate-200 space-y-2">
+                    <p class="text-xs font-bold text-brand-blue"><i class="fa-solid fa-file-signature mr-1"></i> Signatário 2 (Direita)</p>
+                    <input type="text" id="cfg-ass2-nome" oninput="salvarConfigEmpresa()" placeholder="Nome (Ex: Maria Souza)" class="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs">
+                    <input type="text" id="cfg-ass2-setor" oninput="salvarConfigEmpresa()" placeholder="Setor/Cargo (Ex: Gerência de RH / Financeiro)" class="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs">
+                    <input type="text" id="cfg-ass2-titulo" oninput="salvarConfigEmpresa()" placeholder="Rótulo da Linha (Ex: Visto Conferido)" class="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs">
+                </div>
+            </div>
+        </section>
+
+        <!-- ABA 1: DASHBOARD -->
+        <section id="tab-dashboard" class="space-y-6">
+            <!-- Cards Resumo -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white p-5 rounded-xl shadow border-l-4 border-brand-yellow">
+                    <p class="text-xs font-bold text-slate-400 uppercase">Total de Colaboradores</p>
+                    <h3 class="text-3xl font-black text-brand-blue mt-1" id="dash-total-func">0</h3>
+                    <span class="text-xs text-emerald-600 font-semibold flex items-center gap-1 mt-2"><i class="fa-solid fa-circle-check"></i> Equipe Cadastrada</span>
+                </div>
+                <div class="bg-white p-5 rounded-xl shadow border-l-4 border-brand-blueLight">
+                    <p class="text-xs font-bold text-slate-400 uppercase">Média Geral da Produção</p>
+                    <h3 class="text-3xl font-black text-brand-blue mt-1" id="dash-media-nota">0.00</h3>
+                    <span class="text-xs text-brand-blueLight font-semibold flex items-center gap-1 mt-2"><i class="fa-solid fa-star text-brand-yellow"></i> Nota Máxima 10.0</span>
+                </div>
+                <div class="bg-white p-5 rounded-xl shadow border-l-4 border-emerald-500">
+                    <p class="text-xs font-bold text-slate-400 uppercase">Rateio Total Distribuído</p>
+                    <h3 class="text-3xl font-black text-brand-blue mt-1" id="dash-total-rateio">R$ 0,00</h3>
+                    <span class="text-xs text-slate-500 font-semibold flex items-center gap-1 mt-2"><i class="fa-solid fa-wallet"></i> Valor Base Definido</span>
+                </div>
+                <div class="bg-white p-5 rounded-xl shadow border-l-4 border-brand-yellow">
+                    <p class="text-xs font-bold text-slate-400 uppercase">Total a Pagar Ajustado</p>
+                    <h3 class="text-3xl font-black text-emerald-700 mt-1" id="dash-total-pagar">R$ 0,00</h3>
+                    <span class="text-xs text-slate-500 font-semibold flex items-center gap-1 mt-2"><i class="fa-solid fa-calculator"></i> Conforme Metas</span>
+                </div>
+            </div>
+
+            <!-- Gráficos e Ações Rápidas -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Gráfico de Distribuição -->
+                <div class="bg-white p-6 rounded-xl shadow lg:col-span-2 flex flex-col justify-between">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-brand-blue text-lg flex items-center gap-2">
+                            <i class="fa-solid fa-chart-bar text-brand-yellow"></i> Desempenho por Colaborador (Nota 0 a 10)
+                        </h3>
+                        <span class="text-xs bg-brand-light px-3 py-1 rounded font-medium text-slate-600" id="label-periodo-grafico">Outubro / 2026</span>
+                    </div>
+                    <div class="relative h-72 w-full flex items-center justify-center" id="container-grafico">
+                        <canvas id="chartDesempenhoEquipe"></canvas>
+                    </div>
+                </div>
+
+                <!-- Painel de Rateio & Configurações Rápidas -->
+                <div class="bg-white p-6 rounded-xl shadow flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-brand-blue text-lg mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-sliders text-brand-yellow"></i> Parâmetros Financeiros
+                        </h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1">Valor Total do Rateio (R$):</label>
+                                <input type="number" id="input-valor-rateio" value="0.00" step="0.01" onchange="atualizarParametros()" class="w-full bg-brand-light border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold text-brand-blue focus:ring-2 focus:ring-brand-blue outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1">Critérios de Avaliação (Max 2.0 pts cada):</label>
+                                <ul class="text-xs space-y-1 text-slate-600 bg-brand-light p-3 rounded-lg border border-slate-200">
+                                    <li><i class="fa-solid fa-check text-emerald-600 mr-1"></i> Pontualidade (Até 2.0)</li>
+                                    <li><i class="fa-solid fa-check text-emerald-600 mr-1"></i> Baixas no Sistema (Até 2.0)</li>
+                                    <li><i class="fa-solid fa-check text-emerald-600 mr-1"></i> Disciplina / Celular (Até 2.0)</li>
+                                    <li><i class="fa-solid fa-check text-emerald-600 mr-1"></i> Relacionamento (Até 2.0)</li>
+                                    <li><i class="fa-solid fa-check text-emerald-600 mr-1"></i> Assiduidade / 5S (Até 2.0)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="switchTab('relatorio-adm')" class="mt-6 w-full bg-brand-yellow hover:bg-brand-yellowHover text-brand-blue font-bold py-3 rounded-lg transition shadow flex items-center justify-center gap-2 text-sm">
+                        <i class="fa-solid fa-file-invoice-dollar"></i> Ver Relatório Administrativo
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ABA 2: GESTÃO E NOTAS DA EQUIPE -->
+        <section id="tab-avaliacoes" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                    <div>
+                        <h3 class="text-xl font-black text-brand-blue">Tabela de Notas e Avaliação da Produção</h3>
+                        <p class="text-xs text-slate-500">Adicione os colaboradores e edite as notas por critério (0 a 2.0).</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="adicionarFuncionarioModal()" class="bg-brand-blue text-white hover:bg-brand-blueDark px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-2">
+                            <i class="fa-solid fa-user-plus text-brand-yellow"></i> Novo Colaborador
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tabela Editável -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs md:text-sm">
+                        <thead>
+                            <tr class="bg-brand-blue text-white">
+                                <th class="p-3 rounded-l-lg">Funcionário</th>
+                                <th class="p-3 text-center">Pontualidade (2.0)</th>
+                                <th class="p-3 text-center">Baixas Sistema (2.0)</th>
+                                <th class="p-3 text-center">Disciplina/Celular (2.0)</th>
+                                <th class="p-3 text-center">Relacionamento (2.0)</th>
+                                <th class="p-3 text-center">Assiduidade/5S (2.0)</th>
+                                <th class="p-3 text-center font-black text-brand-yellow">Nota (10)</th>
+                                <th class="p-3 text-center">Meta %</th>
+                                <th class="p-3 text-right">Valor a Pagar</th>
+                                <th class="p-3 text-center rounded-r-lg">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-avaliacoes-body" class="divide-y divide-slate-100">
+                            <!-- Preenchido via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ABA 3: RELATÓRIO COMPLETO (OPERACIONAL) -->
+        <section id="tab-relatorio-completo" class="hidden space-y-6">
+            <div class="flex justify-between items-center no-print">
+                <h2 class="text-lg font-bold text-brand-blue"><i class="fa-solid fa-print mr-2"></i> Relatório Operacional Completo</h2>
+                <button onclick="window.print()" class="bg-brand-blue hover:bg-brand-blueDark text-white px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 shadow transition">
+                    <i class="fa-solid fa-file-pdf text-brand-yellow"></i> Imprimir / Salvar PDF
+                </button>
+            </div>
+
+            <!-- Documento Imprimível -->
+            <div class="bg-white p-8 rounded-xl shadow print-shadow space-y-6 max-w-4xl mx-auto border border-slate-200">
+                <div class="border-b border-slate-200 pb-4 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-2xl font-black text-brand-blue" id="doc-empresa-nome">SUA EMPRESA AQUI</h2>
+                        <p class="text-xs text-slate-500 uppercase tracking-wider" id="doc-empresa-sub">Avaliação de Desempenho e Metas de Produção</p>
+                    </div>
+                    <div class="text-right">
+                        <span class="bg-brand-yellow/20 text-brand-blueDark font-bold px-3 py-1 rounded text-xs" id="print-mes-label">Outubro / 2026</span>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h3 class="font-bold text-brand-blue text-sm uppercase bg-brand-light p-2 rounded">Resumo Geral por Integrante da Equipe</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs text-left border border-slate-200">
+                            <thead class="bg-slate-100 text-slate-700">
+                                <tr>
+                                    <th class="p-2 border">Funcionário</th>
+                                    <th class="p-2 border text-center">Pontualidade</th>
+                                    <th class="p-2 border text-center">Baixas Sistema</th>
+                                    <th class="p-2 border text-center">Disciplina</th>
+                                    <th class="p-2 border text-center">Relacionamento</th>
+                                    <th class="p-2 border text-center">Assiduidade</th>
+                                    <th class="p-2 border text-center font-bold text-brand-blue">Nota Final</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rel-completo-tbody">
+                                <!-- Preenchido via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ASSINATURAS DINÂMICAS -->
+                <div class="grid grid-cols-2 gap-8 pt-8">
+                    <div class="border-t border-slate-400 pt-2 text-center">
+                        <p class="text-xs font-bold text-slate-800" id="doc-ass1-nome-view">NOME DO ASSINANTE 1</p>
+                        <p class="text-[11px] font-semibold text-slate-600" id="doc-ass1-setor-view">Cargo / Setor</p>
+                        <p class="text-[10px] text-slate-400 uppercase tracking-wider" id="doc-ass1-titulo-view">Assinatura do Responsável</p>
+                    </div>
+                    <div class="border-t border-slate-400 pt-2 text-center">
+                        <p class="text-xs font-bold text-slate-800" id="doc-ass2-nome-view">NOME DO ASSINANTE 2</p>
+                        <p class="text-[11px] font-semibold text-slate-600" id="doc-ass2-setor-view">Cargo / Setor</p>
+                        <p class="text-[10px] text-slate-400 uppercase tracking-wider" id="doc-ass2-titulo-view">Visto Conferido</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ABA 4: RELATÓRIO OTIMIZADO (ADMINISTRATIVO) -->
+        <section id="tab-relatorio-adm" class="hidden space-y-6">
+            <div class="flex justify-between items-center no-print">
+                <h2 class="text-lg font-bold text-brand-blue"><i class="fa-solid fa-file-invoice-dollar mr-2"></i> Relatório Otimizado (Administrativo / Financeiro)</h2>
+                <button onclick="window.print()" class="bg-brand-blue hover:bg-brand-blueDark text-white px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 shadow transition">
+                    <i class="fa-solid fa-file-pdf text-brand-yellow"></i> Imprimir / Salvar PDF
+                </button>
+            </div>
+
+            <!-- Documento Imprimível Administrativo -->
+            <div class="bg-white p-8 rounded-xl shadow print-shadow space-y-6 max-w-4xl mx-auto border border-slate-200">
+                <div class="border-b border-slate-200 pb-4 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-2xl font-black text-brand-blue" id="doc-adm-empresa-nome">SUA EMPRESA AQUI</h2>
+                        <p class="text-xs text-slate-500 uppercase tracking-wider" id="print-adm-subtitulo">Fechamento de Rateio e Desempenho</p>
+                    </div>
+                    <div class="text-right">
+                        <span class="bg-brand-blue text-brand-yellow font-bold px-3 py-1 rounded text-xs">Administrativo & RH</span>
+                    </div>
+                </div>
+
+                <div class="bg-brand-light p-4 rounded-lg flex flex-wrap justify-between items-center gap-4 text-sm">
+                    <div>
+                        <span class="text-slate-500 text-xs block">Valor Total Rateio:</span>
+                        <span class="font-bold text-brand-blue text-lg" id="rel-adm-total-rateio">R$ 0,00</span>
+                    </div>
+                    <div>
+                        <span class="text-slate-500 text-xs block">Nº Funcionários:</span>
+                        <span class="font-bold text-brand-blue text-lg" id="rel-adm-num-func">0</span>
+                    </div>
+                    <div>
+                        <span class="text-slate-500 text-xs block">Valor Base por Pessoa:</span>
+                        <span class="font-bold text-brand-blue text-lg" id="rel-adm-base-pessoa">R$ 0,00</span>
+                    </div>
+                    <div>
+                        <span class="text-slate-500 text-xs block">Total a Pagar Final:</span>
+                        <span class="font-bold text-emerald-700 text-lg" id="rel-adm-total-pagar">R$ 0,00</span>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h3 class="font-bold text-brand-blue text-sm uppercase">Demonstrativo de Pagamento Individual</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs text-left border border-slate-200">
+                            <thead class="bg-brand-blue text-white">
+                                <tr>
+                                    <th class="p-2.5 border">Funcionário</th>
+                                    <th class="p-2.5 border text-center">Nota (0-10)</th>
+                                    <th class="p-2.5 border text-center">Meta Atingida (%)</th>
+                                    <th class="p-2.5 border text-right">Valor Base (R$)</th>
+                                    <th class="p-2.5 border text-right font-bold text-brand-yellow">Á Pagar (R$)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rel-adm-tbody" class="divide-y divide-slate-100">
+                                <!-- Preenchido via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ASSINATURAS E OBSERVAÇÕES NA ÁREA ADM -->
+                <div class="border-t border-slate-300 pt-6 flex flex-col md:flex-row justify-between items-end gap-6 text-xs">
+                    <div>
+                        <p class="font-bold text-slate-700 mb-1">Observações do Fechamento:</p>
+                        <p class="text-slate-500 italic">Cálculo baseado no índice de pontuação da produção nas 5 categorias estipuladas.</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-6 w-full md:w-auto">
+                        <div class="text-center">
+                            <div class="border-b border-slate-400 w-36 mb-1 mx-auto"></div>
+                            <p class="font-bold text-slate-800 text-[11px]" id="doc-adm-ass1-nome">Signatário 1</p>
+                            <p class="text-[9px] text-slate-500" id="doc-adm-ass1-setor">Setor / Cargo</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="border-b border-slate-400 w-36 mb-1 mx-auto"></div>
+                            <p class="font-bold text-slate-800 text-[11px]" id="doc-adm-ass2-nome">Signatário 2</p>
+                            <p class="text-[9px] text-slate-500" id="doc-adm-ass2-setor">Setor / Cargo</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL NOVO FUNCIONÁRIO -->
+    <div id="modal-funcionario" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
+            <h3 class="text-lg font-bold text-brand-blue flex items-center gap-2">
+                <i class="fa-solid fa-user-plus text-brand-yellow"></i> Adicionar Colaborador
+            </h3>
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Nome Completo:</label>
+                    <input type="text" id="novo-nome" class="w-full bg-brand-light border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-blue" placeholder="Ex: Carlos Silva">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Pontualidade (0-2):</label>
+                        <input type="number" id="novo-c1" value="2" min="0" max="2" step="0.5" class="w-full bg-brand-light border border-slate-300 rounded-lg px-3 py-2 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Baixas Sistema (0-2):</label>
+                        <input type="number" id="novo-c2" value="2" min="0" max="2" step="0.5" class="w-full bg-brand-light border border-slate-300 rounded-lg px-3 py-2 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Disciplina/Celular (0-2):</label>
+                        <input type="number" id="novo-c3" value="2" min="0" max="2" step="0.5" class="w-full bg-brand-light border border-slate-300 rounded-lg px-3 py-2 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Relacionamento (0-2):</label>
+                        <input type="number" id="novo-c4" value="2" min="0" max="2" step="0.5" class="w-full bg-brand-light border border-slate-300 rounded-lg px-3 py-2 text-sm">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Assiduidade/5S (0-2):</label>
+                    <input type="number" id="novo-c5" value="2" min="0" max="2" step="0.5" class="w-full bg-brand-light border border-slate-300 rounded-lg px-3 py-2 text-sm">
+                </div>
+            </div>
+            <div class="flex justify-end gap-2 pt-4">
+                <button onclick="fecharModal()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 rounded-lg text-xs font-bold text-slate-700">Cancelar</button>
+                <button onclick="salvarNovoFuncionario()" class="px-4 py-2 bg-brand-blue hover:bg-brand-blueDark text-white rounded-lg text-xs font-bold">Salvar Colaborador</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT DE GERENCIAMENTO E CÁLCULOS -->
+    <script>
+        let periodoAtual = "2026-10";
+        let chartInstance = null;
+
+        // Configuração Padrão de Empresa (Zera/Limpas para personalização do cliente)
+        let configEmpresa = {
+            nome: "Sua Empresa S.A.",
+            subtitulo: "Avaliação de Desempenho e Metas de Produção",
+            ass1Nome: "Nome do Supervisor",
+            ass1Setor: "Supervisão Operacional",
+            ass1Titulo: "Assinatura do Supervisor",
+            ass2Nome: "Nome do Gerente",
+            ass2Setor: "Gerência Geral / RH",
+            ass2Titulo: "Visto Conferido"
+        };
+
+        function carregarConfigEmpresa() {
+            const salva = localStorage.getItem('dockmaker_config_empresa');
+            if (salva) {
+                try { configEmpresa = { ...configEmpresa, ...JSON.parse(salva) }; } catch(e) {}
+            }
+            document.getElementById('cfg-nome-empresa').value = configEmpresa.nome;
+            document.getElementById('cfg-subtitulo-empresa').value = configEmpresa.subtitulo;
+            document.getElementById('cfg-ass1-nome').value = configEmpresa.ass1Nome;
+            document.getElementById('cfg-ass1-setor').value = configEmpresa.ass1Setor;
+            document.getElementById('cfg-ass1-titulo').value = configEmpresa.ass1Titulo;
+            document.getElementById('cfg-ass2-nome').value = configEmpresa.ass2Nome;
+            document.getElementById('cfg-ass2-setor').value = configEmpresa.ass2Setor;
+            document.getElementById('cfg-ass2-titulo').value = configEmpresa.ass2Titulo;
+
+            atualizarViewConfigEmpresa();
+        }
+
+        function salvarConfigEmpresa() {
+            configEmpresa.nome = document.getElementById('cfg-nome-empresa').value || 'Sua Empresa S.A.';
+            configEmpresa.subtitulo = document.getElementById('cfg-subtitulo-empresa').value || 'Avaliação de Desempenho e Metas';
+            configEmpresa.ass1Nome = document.getElementById('cfg-ass1-nome').value || 'Nome do Signatário 1';
+            configEmpresa.ass1Setor = document.getElementById('cfg-ass1-setor').value || 'Setor / Cargo';
+            configEmpresa.ass1Titulo = document.getElementById('cfg-ass1-titulo').value || 'Assinatura do Responsável';
+            configEmpresa.ass2Nome = document.getElementById('cfg-ass2-nome').value || 'Nome do Signatário 2';
+            configEmpresa.ass2Setor = document.getElementById('cfg-ass2-setor').value || 'Setor / Cargo';
+            configEmpresa.ass2Titulo = document.getElementById('cfg-ass2-titulo').value || 'Visto Conferido';
+
+            localStorage.setItem('dockmaker_config_empresa', JSON.stringify(configEmpresa));
+            atualizarViewConfigEmpresa();
+        }
+
+        function atualizarViewConfigEmpresa() {
+            document.getElementById('doc-empresa-nome').innerText = configEmpresa.nome;
+            document.getElementById('doc-adm-empresa-nome').innerText = configEmpresa.nome;
+            document.getElementById('doc-empresa-sub').innerText = configEmpresa.subtitulo;
+
+            // Assinaturas Operacional
+            document.getElementById('doc-ass1-nome-view').innerText = configEmpresa.ass1Nome;
+            document.getElementById('doc-ass1-setor-view').innerText = configEmpresa.ass1Setor;
+            document.getElementById('doc-ass1-titulo-view').innerText = configEmpresa.ass1Titulo;
+            document.getElementById('doc-ass2-nome-view').innerText = configEmpresa.ass2Nome;
+            document.getElementById('doc-ass2-setor-view').innerText = configEmpresa.ass2Setor;
+            document.getElementById('doc-ass2-titulo-view').innerText = configEmpresa.ass2Titulo;
+
+            // Assinaturas ADM
+            document.getElementById('doc-adm-ass1-nome').innerText = configEmpresa.ass1Nome;
+            document.getElementById('doc-adm-ass1-setor').innerText = configEmpresa.ass1Setor;
+            document.getElementById('doc-adm-ass2-nome').innerText = configEmpresa.ass2Nome;
+            document.getElementById('doc-adm-ass2-setor').innerText = configEmpresa.ass2Setor;
+        }
+
+        function toggleConfigEmpresa() {
+            const el = document.getElementById('painel-config-empresa');
+            const btn = document.getElementById('btn-toggle-config');
+            if (el.classList.contains('hidden')) {
+                el.classList.remove('hidden');
+                btn.innerHTML = '<i class="fa-solid fa-chevron-up mr-1"></i> Ocultar Configurações';
+            } else {
+                el.classList.add('hidden');
+                btn.innerHTML = '<i class="fa-solid fa-chevron-down mr-1"></i> Editar Informações';
+            }
+        }
+
+        // Obtém dados limpos/zerados para novos clientes
+        function obterDadosPeriodo(periodo) {
+            const salvo = localStorage.getItem(`dockmaker_relatorios_${periodo}`);
+            if (salvo) {
+                try { return JSON.parse(salvo); } catch(e) {}
+            }
+            return { valorRateio: 0.00, funcionarios: [] };
+        }
+
+        function salvarDadosPeriodo(periodo, dados) {
+            if(periodo === "todos") return;
+            localStorage.setItem(`dockmaker_relatorios_${periodo}`, JSON.stringify(dados));
+        }
+
+        let dadosAtuais = obterDadosPeriodo(periodoAtual);
+
+        function mudarPeriodoReferencia() {
+            periodoAtual = document.getElementById('select-mes-referencia').value;
+            dadosAtuais = obterDadosPeriodo(periodoAtual);
+            document.getElementById('input-valor-rateio').value = dadosAtuais.valorRateio;
+            
+            const selectEl = document.getElementById('select-mes-referencia');
+            const textoMes = selectEl.options[selectEl.selectedIndex].text;
+            document.getElementById('label-periodo-grafico').innerText = textoMes;
+            document.getElementById('print-mes-label').innerText = textoMes;
+            document.getElementById('print-adm-subtitulo').innerText = `Fechamento de Rateio e Desempenho - ${textoMes}`;
+
+            atualizarInterface();
+        }
+
+        function switchTab(tabId) {
+            ['dashboard', 'avaliacoes', 'relatorio-completo', 'relatorio-adm'].forEach(t => {
+                document.getElementById(`tab-${t}`).classList.add('hidden');
+                document.getElementById(`btn-tab-${t}`).classList.remove('bg-brand-yellow', 'text-brand-blue');
+                document.getElementById(`btn-tab-${t}`).classList.add('bg-brand-blue/50', 'text-white');
+            });
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            document.getElementById(`btn-tab-${tabId}`).classList.remove('bg-brand-blue/50', 'text-white');
+            document.getElementById(`btn-tab-${tabId}`).classList.add('bg-brand-yellow', 'text-brand-blue');
+
+            if(tabId === 'dashboard') renderChart();
+        }
+
+        function calcularDados() {
+            const funcs = dadosAtuais.funcionarios || [];
+            const numFunc = funcs.length;
+            const valorBasePessoa = numFunc > 0 ? (dadosAtuais.valorRateio || 0) / numFunc : 0;
+            
+            let totalPagarGeral = 0;
+            let somaNotas = 0;
+
+            const calcList = funcs.map(f => {
+                const nota = (f.c1 || 0) + (f.c2 || 0) + (f.c3 || 0) + (f.c4 || 0) + (f.c5 || 0);
+                somaNotas += nota;
+                const percentualMeta = (nota / 10) * 100;
+                const valorPagar = valorBasePessoa * (percentualMeta / 100);
+                totalPagarGeral += valorPagar;
+                return { ...f, nota, percentualMeta, valorPagar };
+            });
+
+            return {
+                numFunc,
+                valorBasePessoa,
+                totalPagarGeral,
+                mediaNota: numFunc > 0 ? (somaNotas / numFunc).toFixed(2) : "0.00",
+                calcList
+            };
+        }
+
+        function atualizarInterface() {
+            const dados = calcularDados();
+
+            // Atualiza cards dashboard
+            document.getElementById('dash-total-func').innerText = dados.numFunc;
+            document.getElementById('dash-media-nota').innerText = dados.mediaNota;
+            document.getElementById('dash-total-rateio').innerText = `R$ ${(dadosAtuais.valorRateio || 0).toFixed(2).replace('.', ',')}`;
+            document.getElementById('dash-total-pagar').innerText = `R$ ${dados.totalPagarGeral.toFixed(2).replace('.', ',')}`;
+
+            // Preenche Tabela de Avaliações
+            const tbodyEval = document.getElementById('tabela-avaliacoes-body');
+            tbodyEval.innerHTML = '';
+
+            if (dados.calcList.length === 0) {
+                tbodyEval.innerHTML = `<tr><td colspan="10" class="p-6 text-center text-slate-400 italic">Nenhum colaborador adicionado para este mês. Clique em "Novo Colaborador" acima.</td></tr>`;
+            } else {
+                dados.calcList.forEach((f) => {
+                    const isReadOnly = periodoAtual === 'todos' ? 'disabled' : '';
+                    tbodyEval.innerHTML += `
+                        <tr class="hover:bg-brand-light transition">
+                            <td class="p-3 font-bold text-brand-blue">${f.nome}</td>
+                            <td class="p-3 text-center"><input type="number" min="0" max="2" step="0.5" value="${f.c1}" ${isReadOnly} onchange="atualizarNota(${f.id}, 'c1', this.value)" class="w-16 text-center border rounded bg-white py-1"></td>
+                            <td class="p-3 text-center"><input type="number" min="0" max="2" step="0.5" value="${f.c2}" ${isReadOnly} onchange="atualizarNota(${f.id}, 'c2', this.value)" class="w-16 text-center border rounded bg-white py-1"></td>
+                            <td class="p-3 text-center"><input type="number" min="0" max="2" step="0.5" value="${f.c3}" ${isReadOnly} onchange="atualizarNota(${f.id}, 'c3', this.value)" class="w-16 text-center border rounded bg-white py-1"></td>
+                            <td class="p-3 text-center"><input type="number" min="0" max="2" step="0.5" value="${f.c4}" ${isReadOnly} onchange="atualizarNota(${f.id}, 'c4', this.value)" class="w-16 text-center border rounded bg-white py-1"></td>
+                            <td class="p-3 text-center"><input type="number" min="0" max="2" step="0.5" value="${f.c5}" ${isReadOnly} onchange="atualizarNota(${f.id}, 'c5', this.value)" class="w-16 text-center border rounded bg-white py-1"></td>
+                            <td class="p-3 text-center font-black text-brand-blue bg-brand-yellow/10">${f.nota.toFixed(1)}</td>
+                            <td class="p-3 text-center font-semibold text-slate-600">${f.percentualMeta.toFixed(0)}%</td>
+                            <td class="p-3 text-right font-bold text-emerald-700">R$ ${f.valorPagar.toFixed(2).replace('.', ',')}</td>
+                            <td class="p-3 text-center">
+                                ${periodoAtual !== 'todos' ? `<button onclick="removerFuncionario(${f.id})" class="text-rose-500 hover:text-rose-700 p-1" title="Excluir Colaborador"><i class="fa-solid fa-trash-can"></i></button>` : '<span class="text-xs text-slate-400">N/A</span>'}
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+
+            // Relatório Completo
+            const tbodyRelC = document.getElementById('rel-completo-tbody');
+            tbodyRelC.innerHTML = '';
+            if (dados.calcList.length === 0) {
+                tbodyRelC.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400 italic">Nenhum dado cadastrado.</td></tr>`;
+            } else {
+                dados.calcList.forEach(f => {
+                    tbodyRelC.innerHTML += `
+                        <tr>
+                            <td class="p-2 border font-bold text-slate-800">${f.nome}</td>
+                            <td class="p-2 border text-center">${f.c1}</td>
+                            <td class="p-2 border text-center">${f.c2}</td>
+                            <td class="p-2 border text-center">${f.c3}</td>
+                            <td class="p-2 border text-center">${f.c4}</td>
+                            <td class="p-2 border text-center">${f.c5}</td>
+                            <td class="p-2 border text-center font-black text-brand-blue">${f.nota.toFixed(1)}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            // Relatório Administrativo
+            document.getElementById('rel-adm-total-rateio').innerText = `R$ ${(dadosAtuais.valorRateio || 0).toFixed(2).replace('.', ',')}`;
+            document.getElementById('rel-adm-num-func').innerText = dados.numFunc;
+            document.getElementById('rel-adm-base-pessoa').innerText = `R$ ${dados.valorBasePessoa.toFixed(2).replace('.', ',')}`;
+            document.getElementById('rel-adm-total-pagar').innerText = `R$ ${dados.totalPagarGeral.toFixed(2).replace('.', ',')}`;
+
+            const tbodyRelAdm = document.getElementById('rel-adm-tbody');
+            tbodyRelAdm.innerHTML = '';
+            if (dados.calcList.length === 0) {
+                tbodyRelAdm.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400 italic">Nenhum dado cadastrado.</td></tr>`;
+            } else {
+                dados.calcList.forEach(f => {
+                    tbodyRelAdm.innerHTML += `
+                        <tr>
+                            <td class="p-2.5 border font-bold text-slate-800">${f.nome}</td>
+                            <td class="p-2.5 border text-center font-bold">${f.nota.toFixed(1)}</td>
+                            <td class="p-2.5 border text-center font-semibold">${f.percentualMeta.toFixed(0)}%</td>
+                            <td class="p-2.5 border text-right">R$ ${dados.valorBasePessoa.toFixed(2).replace('.', ',')}</td>
+                            <td class="p-2.5 border text-right font-black text-emerald-700">R$ ${f.valorPagar.toFixed(2).replace('.', ',')}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            renderChart();
+        }
+
+        function atualizarNota(id, campo, valor) {
+            if(periodoAtual === 'todos') {
+                alert('Selecione um mês específico para editar os dados.');
+                return;
+            }
+            const func = dadosAtuais.funcionarios.find(f => f.id === id);
+            if(func) {
+                func[campo] = parseFloat(valor) || 0;
+                salvarDadosPeriodo(periodoAtual, dadosAtuais);
+                atualizarInterface();
+            }
+        }
+
+        function removerFuncionario(id) {
+            if(periodoAtual === 'todos') {
+                alert('Selecione um mês específico para remover colaboradores.');
+                return;
+            }
+            if(confirm('Tem certeza que deseja excluir este colaborador do mês selecionado?')) {
+                dadosAtuais.funcionarios = dadosAtuais.funcionarios.filter(f => f.id !== id);
+                salvarDadosPeriodo(periodoAtual, dadosAtuais);
+                atualizarInterface();
+            }
+        }
+
+        function atualizarParametros() {
+            if(periodoAtual === 'todos') {
+                alert('Selecione um mês específico para alterar os parâmetros.');
+                return;
+            }
+            dadosAtuais.valorRateio = parseFloat(document.getElementById('input-valor-rateio').value) || 0;
+            salvarDadosPeriodo(periodoAtual, dadosAtuais);
+            atualizarInterface();
+        }
+
+        function adicionarFuncionarioModal() {
+            if(periodoAtual === 'todos') {
+                alert('Selecione um mês específico para adicionar novos colaboradores.');
+                return;
+            }
+            document.getElementById('modal-funcionario').classList.remove('hidden');
+        }
+
+        function fecharModal() {
+            document.getElementById('modal-funcionario').classList.add('hidden');
+        }
+
+        function salvarNovoFuncionario() {
+            const nome = document.getElementById('novo-nome').value.trim();
+            if(!nome) {
+                alert('Por favor, informe o nome do colaborador.');
+                return;
+            }
+            const novo = {
+                id: Date.now(),
+                nome,
+                c1: parseFloat(document.getElementById('novo-c1').value) || 2,
+                c2: parseFloat(document.getElementById('novo-c2').value) || 2,
+                c3: parseFloat(document.getElementById('novo-c3').value) || 2,
+                c4: parseFloat(document.getElementById('novo-c4').value) || 2,
+                c5: parseFloat(document.getElementById('novo-c5').value) || 2
+            };
+            if(!dadosAtuais.funcionarios) dadosAtuais.funcionarios = [];
+            dadosAtuais.funcionarios.push(novo);
+            salvarDadosPeriodo(periodoAtual, dadosAtuais);
+            fecharModal();
+            document.getElementById('novo-nome').value = '';
+            atualizarInterface();
+        }
+
+        function renderChart() {
+            const canvas = document.getElementById('chartDesempenhoEquipe');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const dados = calcularDados();
+
+            if(chartInstance) chartInstance.destroy();
+
+            const labels = dados.calcList.length > 0 ? dados.calcList.map(f => f.nome) : ['Sem dados'];
+            const chartData = dados.calcList.length > 0 ? dados.calcList.map(f => f.nota) : [0];
+
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Nota de Desempenho (0 a 10)',
+                        data: chartData,
+                        backgroundColor: '#0A2540',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, max: 10 }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        // Inicialização
+        window.onload = () => {
+            carregarConfigEmpresa();
+            document.getElementById('input-valor-rateio').value = dadosAtuais.valorRateio;
+            atualizarInterface();
+        };
+    </script>
+</body>
+</html>

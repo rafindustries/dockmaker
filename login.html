@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DockMaker PRO | Portal de Acesso</title>
+    <meta name="description" content="Acesse o Gerador de Contratos com Assinatura Digital e o Gerador de Relatórios de Desempenho do DockMaker PRO.">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- Favicon SVG Transparente Embutido -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 38' fill='none'><rect x='1' y='1' width='28' height='36' rx='4' stroke='%230D6EFD' stroke-width='2.5' fill='none'/><path d='M21 1V9H29' stroke='%230D6EFD' stroke-width='2.5'/><path d='M15 12V26M9 17H21M9 17L6 23H12L9 17ZM21 17L18 23H24L21 17ZM12 27H18' stroke='white' stroke-width='2' stroke-linecap='round'/><path d='M20 27L24 31L32 21' stroke='%23FFB900' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+
+    <!-- Firebase SDKs (Auth & Firestore) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <style>
+        body {
+            background-color: #f4f6f9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .tool-card {
+            border: none;
+            border-radius: 12px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            background: #fff;
+        }
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .icon-box {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+        .btn-social {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAV BAR -->
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container">
+            <a href="index.html" class="d-inline-flex align-items-center text-decoration-none">
+                <svg width="220" height="42" viewBox="0 0 220 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="2" y="2" width="28" height="36" rx="4" stroke="#e0effe" stroke-width="2.2" fill="none"/>
+                    <path d="M22 2V10H30" stroke="#3b82f6" stroke-width="2.2" stroke-linejoin="round"/>
+                    <path d="M16 13V27M10 18H22M10 18L7 24H13L10 18ZM22 18L19 24H25L22 18ZM13 28H19" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+                    <path d="M22 28L26 32L34 22" stroke="#FFB900" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                    <text x="44" y="27" font-family="'Segoe UI', Roboto, sans-serif" font-weight="800" font-size="20" fill="white">DockMaker</text>
+                    <text x="160" y="27" font-family="'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="20" fill="#3b82f6">PRO</text>
+                    <line x1="160" y1="31" x2="202" y2="31" stroke="#FFB900" stroke-width="2.5" stroke-linecap="round"/>
+                </svg>
+            </a>
+            <div class="d-flex align-items-center gap-3">
+                <div id="admin-link-container"></div>
+                <div id="user-status" class="text-white small"></div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <div class="container my-auto py-5">
+        <div class="text-center mb-5">
+            <h1 class="fw-bold">Selecione a Ferramenta de Trabalho</h1>
+            <p class="text-muted">Faça login para aceder à sua suíte completa de gestão profissional.</p>
+        </div>
+
+        <div class="row g-4 justify-content-center">
+            <!-- OPÇÃO 1: CONTRATOS & TERMOS -->
+            <div class="col-md-5">
+                <div class="card tool-card p-4 h-100 shadow-sm" onclick="selectTool('contratos.html')">
+                    <div class="icon-box bg-primary text-white">
+                        <i class="bi bi-file-text"></i>
+                    </div>
+                    <h3 class="fw-bold h4">Gerador de Contratos & Termos</h3>
+                    <p class="text-muted small">Crie contratos de prestação de serviços, orçamentos e termos de garantia com assinatura digital no celular e exportação em PDF.</p>
+                    <div class="mt-auto pt-3">
+                        <button class="btn btn-outline-primary w-100 fw-semibold">Aceder à Ferramenta <i class="bi bi-arrow-right ms-1"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OPÇÃO 2: RELATÓRIOS DE DESEMPENHO -->
+            <div class="col-md-5">
+                <div class="card tool-card p-4 h-100 shadow-sm" onclick="selectTool('relatorios.html')">
+                    <div class="icon-box bg-success text-white">
+                        <i class="bi bi-graph-up-arrow"></i>
+                    </div>
+                    <h3 class="fw-bold h4">Relatórios de Desempenho</h3>
+                    <p class="text-muted small">Elabore relatórios técnicos e operacionais, acompanhe indicadores (KPIs), métricas financeiras e resumos de produtividade.</p>
+                    <div class="mt-auto pt-3">
+                        <button class="btn btn-outline-success w-100 fw-semibold">Aceder à Ferramenta <i class="bi bi-arrow-right ms-1"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE LOGIN / CADASTRO -->
+    <div class="modal fade" id="loginModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-lock me-2 text-primary"></i>Entrar no DockMaker</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    
+                    <!-- BOTÕES DE LOGIN SOCIAL -->
+                    <div class="d-grid gap-2 mb-3">
+                        <button type="button" class="btn btn-outline-dark btn-social" onclick="handleGoogleAuth()">
+                            <i class="bi bi-google text-danger"></i> Continuar com o Google
+                        </button>
+                        <button type="button" class="btn btn-outline-dark btn-social" onclick="handleMicrosoftAuth()">
+                            <i class="bi bi-microsoft text-primary"></i> Continuar com a Microsoft
+                        </button>
+                    </div>
+
+                    <div class="position-relative my-3 text-center">
+                        <hr>
+                        <span class="position-absolute top-50 start-50 translate-middle bg-white px-2 text-muted small">ou use o seu e-mail</span>
+                    </div>
+
+                    <!-- FORMULÁRIO EMAIL/SENHA -->
+                    <form onsubmit="handleLogin(event)">
+                        <div class="mb-3">
+                            <label class="form-label small font-weight-bold">E-mail Profissional</label>
+                            <input type="email" class="form-control" id="email" placeholder="seu@email.com" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small font-weight-bold">Palavra-passe</label>
+                            <input type="password" class="form-control" id="password" placeholder="******" required>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary fw-semibold">Entrar com E-mail</button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="handleRegister()">Criar Conta com E-mail</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDKUovo_4RrB8Igv8jJLEG31E43NB4Uwwk",
+            authDomain: "dockmaker-bd8eb.firebaseapp.com",
+            projectId: "dockmaker-bd8eb",
+            storageBucket: "dockmaker-bd8eb.firebasestorage.app",
+            messagingSenderId: "27485576136",
+            appId: "1:27485576136:web:f3112e697068b80a5f3efd",
+            measurementId: "G-C4MN1FRMXX"
+        };
+        
+        try { firebase.initializeApp(firebaseConfig); } catch(e) {}
+
+        const db = firebase.firestore();
+        let targetUrl = '';
+        let modalInstance = null;
+
+        document.addEventListener("DOMContentLoaded", () => {
+            modalInstance = new bootstrap.Modal(document.getElementById('loginModal'));
+
+            firebase.auth().onAuthStateChanged((user) => {
+                const userArea = document.getElementById('user-status');
+                const adminContainer = document.getElementById('admin-link-container');
+                
+                if (user) {
+                    garantirPerfilUsuario(user);
+
+                    if (user.emailVerified || user.providerData[0].providerId !== 'password') {
+                        userArea.innerHTML = `Logado como: <strong>${user.email || user.displayName}</strong> <a href="#" onclick="logout()" class="text-danger ms-2 text-decoration-none">(Sair)</a>`;
+                    } else {
+                        userArea.innerHTML = `<span class="badge bg-warning text-dark">E-mail não verificado</span> <a href="#" onclick="logout()" class="text-danger ms-2 text-decoration-none">(Sair)</a>`;
+                    }
+
+                    // Verifica se é admin para mostrar o botão do painel administrativo
+                    db.collection("usuarios").doc(user.email.toLowerCase()).get().then((doc) => {
+                        if (doc.exists && doc.data().isAdmin) {
+                            adminContainer.innerHTML = `<a href="admin.html" class="btn btn-warning btn-sm fw-bold"><i class="bi bi-shield-lock-fill me-1"></i> Painel Admin</a>`;
+                        } else {
+                            adminContainer.innerHTML = '';
+                        }
+                    }).catch(() => { adminContainer.innerHTML = ''; });
+
+                } else {
+                    userArea.innerHTML = `<span class="badge bg-secondary">Não autenticado</span>`;
+                    adminContainer.innerHTML = '';
+                }
+            });
+        });
+
+        // Garante a existência do documento do utilizador no Firestore
+        function garantirPerfilUsuario(user) {
+            if (!user || !user.email) return;
+            const emailLower = user.email.toLowerCase();
+            const userRef = db.collection("usuarios").doc(emailLower);
+
+            userRef.get().then((doc) => {
+                if (!doc.exists) {
+                    userRef.set({
+                        nome: user.displayName || user.email.split('@')[0],
+                        email: emailLower,
+                        acessoContratos: true,
+                        acessoRelatorios: true,
+                        isAdmin: false
+                    }, { merge: true }).catch(err => console.error("Erro ao criar perfil padrão:", err));
+                }
+            }).catch(err => console.warn("Erro ao verificar perfil:", err));
+        }
+
+        function selectTool(url) {
+            targetUrl = url;
+            const user = firebase.auth().currentUser;
+            if (!user) {
+                modalInstance.show();
+                return;
+            }
+
+            if (user.providerData[0].providerId === 'password' && !user.emailVerified) {
+                alert("Por favor, aceda à sua caixa de entrada e valide o seu e-mail antes de aceder à ferramenta.");
+                modalInstance.show();
+                return;
+            }
+
+            const emailLower = user.email.toLowerCase();
+            db.collection("usuarios").doc(emailLower).get().then((doc) => {
+                if (doc.exists) {
+                    const dados = doc.data();
+                    if (url.includes("contratos.html") && dados.acessoContratos === false) {
+                        alert("Acesso Negado: O seu utilizador não tem permissão para aceder ao Gerador de Contratos.");
+                        return;
+                    }
+                    if (url.includes("relatorios.html") && dados.acessoRelatorios === false) {
+                        alert("Acesso Negado: O seu utilizador não tem permissão para aceder aos Relatórios.");
+                        return;
+                    }
+                }
+                window.location.href = url;
+            }).catch((err) => {
+                console.warn("Erro ao validar permissões, prosseguindo:", err);
+                window.location.href = url;
+            });
+        }
+
+        // LOGIN VIA GOOGLE
+        function handleGoogleAuth() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            firebase.auth().signInWithPopup(provider)
+                .then((result) => {
+                    garantirPerfilUsuario(result.user);
+                    modalInstance.hide();
+                    if (targetUrl) window.location.href = targetUrl;
+                })
+                .catch((error) => alert("Erro na autenticação com o Google: " + error.message));
+        }
+
+        // LOGIN VIA MICROSOFT
+        function handleMicrosoftAuth() {
+            const provider = new firebase.auth.OAuthProvider('microsoft.com');
+            firebase.auth().signInWithPopup(provider)
+                .then((result) => {
+                    garantirPerfilUsuario(result.user);
+                    modalInstance.hide();
+                    if (targetUrl) window.location.href = targetUrl;
+                })
+                .catch((error) => alert("Erro na autenticação com a Microsoft: " + error.message));
+        }
+
+        // LOGIN VIA EMAIL / SENHA
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            if(!email || !password) {
+                alert("Por favor, preencha o e-mail e a palavra-passe.");
+                return;
+            }
+
+            firebase.auth().signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    if (!user.emailVerified) {
+                        alert("O seu e-mail ainda não foi verificado. Enviámos um link de confirmação para a sua caixa de entrada.");
+                        firebase.auth().signOut();
+                        return;
+                    }
+                    modalInstance.hide();
+                    if (targetUrl) window.location.href = targetUrl;
+                })
+                .catch((error) => alert("Erro no login: " + error.message));
+        }
+
+        // CRIAR CONTA COM E-MAIL E EXIGIR VERIFICAÇÃO
+        function handleRegister() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            if(!email || !password) {
+                alert("Preencha o e-mail e a palavra-passe para criar a conta.");
+                return;
+            }
+
+            firebase.auth().createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    garantirPerfilUsuario(userCredential.user);
+                    userCredential.user.sendEmailVerification().then(() => {
+                        alert("Conta criada com sucesso! Enviámos um link de confirmação para o seu e-mail (" + email + "). Por favor, verifique a sua caixa de entrada antes de aceder.");
+                        firebase.auth().signOut();
+                        modalInstance.hide();
+                    });
+                })
+                .catch((error) => alert("Erro ao criar conta: " + error.message));
+        }
+
+        function logout() {
+            firebase.auth().signOut().then(() => location.reload());
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

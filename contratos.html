@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocMaker Legal PRO - Gerador de Termos, Contratos e Orçamentos</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Favicon SVG Transparente Embutido (Funciona perfeitamente em modo claro/escuro) -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 38' fill='none'><rect x='1' y='1' width='28' height='36' rx='4' stroke='%230D6EFD' stroke-width='2.5' fill='none'/><path d='M21 1V9H29' stroke='%230D6EFD' stroke-width='2.5'/><path d='M15 12V26M9 17H21M9 17L6 23H12L9 17ZM21 17L18 23H24L21 17ZM12 27H18' stroke='white' stroke-width='2' stroke-linecap='round'/><path d='M20 27L24 31L32 21' stroke='%23FFB900' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+    <!-- html2pdf.js for Client-side PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+
+        .page-a4 {
+            width: 100%;
+            min-height: 297mm;
+            padding: 18mm 16mm;
+            margin: 0 auto;
+            background: white;
+            color: #0f172a;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+            position: relative;
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        @media print {
+            body {
+                background: white !important;
+                color: black !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            .page-a4 {
+                width: 100% !important;
+                min-height: 100vh !important;
+                margin: 0 !important;
+                padding: 12mm !important;
+                box-shadow: none !important;
+                border: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans min-h-full flex flex-col transition-colors duration-200">
+
+    <!-- Script de Proteção de Rota e Inicialização do Firebase -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDKUovo_4RrB8Igv8jJLEG31E43NB4Uwwk",
+            authDomain: "dockmaker-bd8eb.firebaseapp.com",
+            projectId: "dockmaker-bd8eb",
+            storageBucket: "dockmaker-bd8eb.firebasestorage.app",
+            messagingSenderId: "27485576136",
+            appId: "1:27485576136:web:f3112e697068b80a5f3efd",
+            measurementId: "G-C4MN1FRMXX"
+        };
+        try { firebase.initializeApp(firebaseConfig); } catch(e) {}
+
+        // Proteção de Rota: Se não estiver logado, expulsa para o index.html
+        firebase.auth().onAuthStateChanged((user) => {
+    if (!user) {
+        window.location.href = "index.html";
+    } else {
+        const db = firebase.firestore();
+        db.collection("usuarios").doc(user.email).get().then((doc) => {
+            // Garante o bloqueio se tentar entrar pela URL sem permissão
+            if (!doc.exists || !doc.data().acessoContratos) { // Ou acessoRelatorios no relatorios.html
+                alert("Acesso negado para este usuário!");
+                window.location.href = "index.html";
+            }
+        });
+    }
+});
+
+        function voltarAoMenu() {
+            window.location.href = "index.html";
+        }
+    </script>
+
+    <!-- Navbar -->
+    <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-40 no-print border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <button onclick="voltarAoMenu()" class="p-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl transition-colors" title="Voltar ao Menu Principal">
+                    <i class="fa-solid fa-arrow-left text-lg"></i>
+                </button>
+                <div class="bg-gradient-to-tr from-brand-700 to-brand-500 p-2.5 rounded-xl text-white shadow-md">
+                    <i class="fa-solid fa-scale-balanced text-xl"></i>
+                </div>
+                <div>
+                    <!-- CÓDIGO DO LOGOTIPO SVG PROFISSIONAL - SEM FUNDO -->
+<a href="index.html" class="d-inline-flex align-items-center text-decoration-none">
+    <svg width="220" height="42" viewBox="0 0 220 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Ícone do Documento Profissional (Fundo removido, cores ajustadas para escuro) -->
+        <rect x="2" y="2" width="28" height="36" rx="4" stroke="#e0effe" stroke-width="2.2" fill="none"/>
+        <path d="M22 2V10H30" stroke="#3b82f6" stroke-width="2.2" stroke-linejoin="round"/>
+        
+        <!-- Símbolo da Balança (Branco para contraste) -->
+        <path d="M16 13V27M10 18H22M10 18L7 24H13L10 18ZM22 18L19 24H25L22 18ZM13 28H19" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+        
+        <!-- Check de Validação Dourado Minimalista -->
+        <path d="M22 28L26 32L34 22" stroke="#FFB900" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        
+        <!-- Texto 'DockMaker' em Branco (Para contraste no fundo escuro) -->
+        <text x="44" y="27" font-family="'Segoe UI', Roboto, sans-serif" font-weight="800" font-size="20" fill="white">DockMaker</text>
+        
+        <!-- Texto 'PRO' em Azul Destaque -->
+        <text x="160" y="27" font-family="'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="20" fill="#3b82f6">PRO</text>
+        <line x1="160" y1="31" x2="202" y2="31" stroke="#FFB900" stroke-width="2.5" stroke-linecap="round"/>
+    </svg>
+</a>
+                    <p class="text-[10px] text-slate-400 hidden sm:block">Alinhado à LGPD & Código de Defesa do Consumidor (CDC)</p>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-2">
+                <button onclick="voltarAoMenu()" class="px-3 py-2 text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl transition-colors flex items-center gap-2 border border-slate-700">
+                    <i class="fa-solid fa-house-door"></i>
+                    <span class="hidden sm:inline">Menu Principal</span>
+                </button>
+                <button onclick="toggleDarkMode()" class="p-2.5 text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl transition-colors" title="Alternar Tema">
+                    <i id="themeIcon" class="fa-solid fa-moon"></i>
+                </button>
+                <button onclick="openHistoryModal()" class="px-3 py-2 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl transition-colors flex items-center gap-2 border border-slate-700">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <span class="hidden sm:inline">Histórico</span>
+                </button>
+                <button onclick="openIssuerModal()" class="px-3 py-2 text-xs font-bold bg-brand-600 hover:bg-brand-700 text-white rounded-xl transition-colors flex items-center gap-2 shadow-sm">
+                    <i class="fa-solid fa-building-user"></i>
+                    <span class="hidden sm:inline">Meus Dados</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main App Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- EDITOR PANEL (Left Column) -->
+        <section class="lg:col-span-6 space-y-6 no-print">
+            
+            <!-- Document Type Selector -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-2 flex flex-col gap-1">
+                <label class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 px-2 pt-1">Selecione o Modelo Jurídico</label>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-1.5 pt-1">
+                    <button onclick="setDocType('contrato')" id="tab-contrato" class="tab-btn py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-file-contract"></i> Contrato
+                    </button>
+                    <button onclick="setDocType('termo_servico')" id="tab-termo_servico" class="tab-btn py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-file-signature"></i> Adesão / CDC
+                    </button>
+                    <button onclick="setDocType('privacidade_lgpd')" id="tab-privacidade_lgpd" class="tab-btn py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-user-shield"></i> LGPD
+                    </button>
+                    <button onclick="setDocType('isencao_responsabilidade')" id="tab-isencao_responsabilidade" class="tab-btn py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Isenção
+                    </button>
+                    <button onclick="setDocType('termo_aceite')" id="tab-termo_aceite" class="tab-btn py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-clipboard-check"></i> Aceite / Entrega
+                    </button>
+                    <button onclick="setDocType('orcamento')" id="tab-orcamento" class="tab-btn py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-calculator"></i> Orçamento
+                    </button>
+                </div>
+            </div>
+
+            <!-- Form Body -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-5 sm:p-6 space-y-6">
+                
+                <!-- Client Info Section -->
+                <div>
+                    <h3 class="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-user-tie text-brand-600"></i> Qualificação do Cliente (Contratante)
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="sm:col-span-2">
+                            <label class="block text-[11px] font-bold mb-1">Nome Completo / Razão Social</label>
+                            <input type="text" id="clientName" oninput="render()" placeholder="Ex: Carlos Eduardo de Oliveira" class="w-full text-xs px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-700 focus:ring-2 focus:ring-brand-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold mb-1">CPF / CNPJ</label>
+                            <input type="text" id="clientDoc" oninput="render()" placeholder="000.000.000-00" class="w-full text-xs px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-700 focus:ring-2 focus:ring-brand-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold mb-1">Telefone / WhatsApp</label>
+                            <input type="text" id="clientPhone" oninput="render()" placeholder="(00) 00000-0000" class="w-full text-xs px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-700 focus:ring-2 focus:ring-brand-500 outline-none">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-[11px] font-bold mb-1">Endereço Completo</label>
+                            <input type="text" id="clientAddress" oninput="render()" placeholder="Rua, Nº, Bairro, Cidade - UF" class="w-full text-xs px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-700 focus:ring-2 focus:ring-brand-500 outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200 dark:border-slate-700">
+
+                <!-- Services / Hardware / Equipment List -->
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2">
+                            <i class="fa-solid fa-list-check text-brand-600"></i> Objetos, Equipamentos & Serviços
+                        </h3>
+                        <button onclick="addItem()" class="text-xs bg-brand-50 dark:bg-brand-900/40 hover:bg-brand-100 text-brand-700 dark:text-brand-300 font-extrabold px-3 py-1.5 rounded-xl transition-colors flex items-center gap-1">
+                            <i class="fa-solid fa-plus"></i> Adicionar Item
+                        </button>
+                    </div>
+
+                    <div id="itemsContainer" class="space-y-3">
+                        <!-- Rendered via JS -->
+                    </div>
+
+                    <!-- Discount and Financial Totals -->
+                    <div class="mt-4 p-4 bg-slate-50 dark:bg-slate-700/40 rounded-xl border border-slate-200 dark:border-slate-600 space-y-3">
+                        <div class="grid grid-cols-12 gap-2 items-center">
+                            <div class="col-span-6 sm:col-span-4">
+                                <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1">Desconto</label>
+                                <select id="discountType" onchange="render()" class="w-full text-xs px-2.5 py-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 outline-none">
+                                    <option value="fixed">Valor Fixo (R$)</option>
+                                    <option value="percent">Porcentagem (%)</option>
+                                </select>
+                            </div>
+                            <div class="col-span-6 sm:col-span-4">
+                                <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1">Valor do Desconto</label>
+                                <input type="number" id="discountValue" value="0" min="0" step="0.01" oninput="render()" class="w-full text-xs px-2.5 py-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 outline-none">
+                            </div>
+                            <div class="col-span-12 sm:col-span-4 text-right">
+                                <span class="block text-[10px] font-extrabold uppercase text-slate-400">Total com Impostos</span>
+                                <span id="grandTotalDisplay" class="text-xl font-black text-brand-600 dark:text-brand-400">R$ 0,00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200 dark:border-slate-700">
+
+                <!-- Legal Parameters & Clauses Editor -->
+                <div>
+                    <h3 class="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-gavel text-brand-600"></i> Parâmetros e Cláusulas Jurídicas
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-bold mb-1">Garantia Técnica (CDC Art. 26)</label>
+                            <select id="warrantyTerm" onchange="render()" class="w-full text-xs px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-700 outline-none">
+                                <option value="90 dias (Garantia Legal CDC Art. 26 II)">90 Dias (Legal CDC Art. 26 - Serviços Duráveis)</option>
+                                <option value="30 dias (Garantia Legal CDC Art. 26 I)">30 Dias (Legal CDC Art. 26 - Serviços Não Duráveis)</option>
+                                <option value="180 dias (Garantia Estendida)">180 Dias (Garantia Estendida do Prestador)</option>
+                                <option value="365 dias (1 Ano)">1 Ano (Garantia Ampla)</option>
+                                <option value="Sem Garantia (Serviço pontual / Vício pré-existente registrado)">Sem Garantia (Igrejas/Risco Aceito pelo Cliente)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold mb-1">Foro de Eleição (Comarca)</label>
+                            <input type="text" id="legalCity" oninput="render()" placeholder="Ex: Arcoverde - PE" class="w-full text-xs px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-700 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold mb-1">Multa por Rescisão / Atraso (%)</label>
+                            <input type="text" id="penaltyFee" oninput="render()" value="10%" class="w-full text-xs px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-700 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold mb-1">Forma de Pagamento</label>
+                            <select id="paymentMethod" onchange="render()" class="w-full text-xs px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-700 outline-none">
+                                <option value="PIX">PIX</option>
+                                <option value="Boleto Bancário">Boleto Bancário</option>
+                                <option value="Cartão de Crédito">Cartão de Crédito</option>
+                                <option value="Transferência Bancária">Transferência Bancária</option>
+                                <option value="Dinheiro em Espécie">Dinheiro em Espécie</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold mb-1">Cobrança de Visita Técnica</label>
+                            <input type="text" id="techVisitFee" oninput="render()" placeholder="Ex: R$ 80,00 caso não aprovado" class="w-full text-xs px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-700 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold mb-1">Data do Documento</label>
+                            <input type="date" id="docDate" onchange="render()" class="w-full text-xs px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-700 outline-none">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-[11px] font-bold mb-1">Cláusula de Exceção / Observações Técnicas Especiais</label>
+                            <textarea id="additionalNotes" oninput="render()" rows="3" placeholder="Ex: O cliente foi alertado sobre o risco de componentes oxidados na placa-mãe e autorizou a tentativa de reparo por sua conta e risco." class="w-full text-xs p-3 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-700 outline-none"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200 dark:border-slate-700">
+
+                <!-- Signature Pad & Legal Metadata -->
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2">
+                            <i class="fa-solid fa-pen-nib text-brand-600"></i> Assinatura Digital Touch (Art. 10 MP 2.200-2/2001)
+                        </h3>
+                        <button onclick="clearSignature()" class="text-[11px] text-rose-500 hover:text-rose-600 font-bold">Limpar Tela</button>
+                    </div>
+                    <div class="border-2 border-slate-300 dark:border-slate-600 rounded-xl overflow-hidden bg-white">
+                        <canvas id="sigCanvas" width="500" height="130" class="w-full h-28 touch-none cursor-crosshair"></canvas>
+                    </div>
+                    <div class="mt-2 text-[10px] text-slate-400 flex items-center justify-between">
+                        <span><i class="fa-solid fa-shield-halved"></i> Registra timestamp, Hash de validação e user-agent.</span>
+                        <button onclick="refreshLegalHash()" class="text-brand-600 hover:underline">Recalcular Hash</button>
+                    </div>
+                </div>
+
+                <!-- Save Action -->
+                <button onclick="saveToHistory()" class="w-full py-3.5 bg-slate-900 hover:bg-black dark:bg-brand-600 dark:hover:bg-brand-700 text-white font-extrabold text-xs rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-box-archive"></i>
+                    <span>Salvar no Histórico Local de Documentos</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- PREVIEW PANEL (Right Column) -->
+        <section class="lg:col-span-6 space-y-4">
+            
+            <!-- Actions Toolbar -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-3 flex flex-wrap items-center justify-between gap-2 no-print">
+                <span class="text-[11px] font-black text-slate-400 uppercase px-1">Ações de Documento</span>
+                <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                    <button onclick="copyForWhatsApp()" class="flex-1 sm:flex-initial px-3.5 py-2 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl transition-colors flex items-center justify-center gap-1.5 shadow-sm">
+                        <i class="fa-brands fa-whatsapp text-sm"></i>
+                        <span>WhatsApp</span>
+                    </button>
+                    <button onclick="generatePDF()" class="flex-1 sm:flex-initial px-3.5 py-2 text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white rounded-xl transition-colors flex items-center justify-center gap-1.5 shadow-sm">
+                        <i class="fa-solid fa-file-pdf"></i>
+                        <span>Baixar PDF</span>
+                    </button>
+                    <button onclick="window.print()" class="flex-1 sm:flex-initial px-3.5 py-2 text-xs font-bold bg-slate-800 hover:bg-slate-900 text-white rounded-xl transition-colors flex items-center justify-center gap-1.5 shadow-sm">
+                        <i class="fa-solid fa-print"></i>
+                        <span>Imprimir</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Legal Explanation Banner for Current Document -->
+            <div id="legalAdviceBanner" class="p-3.5 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 rounded-2xl text-[11px] text-amber-900 dark:text-amber-200 flex items-start gap-3 no-print">
+                <i class="fa-solid fa-circle-info text-amber-600 text-base mt-0.5"></i>
+                <div id="legalAdviceText">
+                    <!-- Dynamic legal notice text based on doc type -->
+                </div>
+            </div>
+
+            <!-- Live Render A4 Document Page -->
+            <div class="overflow-x-auto pb-8">
+                <div id="a4Document" class="page-a4 flex flex-col justify-between">
+                    <!-- Rendered Document HTML via JS -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Issuer Modal -->
+    <div id="issuerModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
+        <div class="bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 max-w-lg w-full p-6 space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="text-base font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-id-card text-brand-600"></i> Dados do Prestador / Emitente
+                </h3>
+                <button onclick="closeIssuerModal()" class="text-slate-400 hover:text-slate-600 p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold mb-1">Razão Social / Nome Profissional</label>
+                    <input type="text" id="issuerName" class="w-full text-xs px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-700 outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">CPF ou CNPJ</label>
+                        <input type="text" id="issuerDoc" class="w-full text-xs px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-700 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">Telefone / WhatsApp</label>
+                        <input type="text" id="issuerPhone" class="w-full text-xs px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-700 outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold mb-1">E-mail para Notificações LGPD</label>
+                    <input type="email" id="issuerEmail" class="w-full text-xs px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-700 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold mb-1">Endereço Comercial</label>
+                    <input type="text" id="issuerAddress" class="w-full text-xs px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-700 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold mb-1">Chave PIX Oficial</label>
+                    <input type="text" id="issuerPix" class="w-full text-xs px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-700 outline-none">
+                </div>
+            </div>
+
+            <div class="flex items-center justify-end space-x-2 pt-2">
+                <button onclick="closeIssuerModal()" class="px-4 py-2 text-xs font-semibold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl">Cancelar</button>
+                <button onclick="saveIssuerData()" class="px-4 py-2 text-xs font-bold bg-brand-600 hover:bg-brand-700 text-white rounded-xl shadow-sm">Salvar Dados</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Modal -->
+    <div id="historyModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
+        <div class="bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 max-w-lg w-full p-6 space-y-4 max-h-[80vh] flex flex-col">
+            <div class="flex items-center justify-between">
+                <h3 class="text-base font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-clock-rotate-left text-brand-600"></i> Histórico de Documentos
+                </h3>
+                <button onclick="closeHistoryModal()" class="text-slate-400 hover:text-slate-600 p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div id="historyList" class="flex-grow overflow-y-auto space-y-2 pr-1">
+                <!-- Items via JS -->
+            </div>
+
+            <div class="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-slate-700">
+                <button onclick="clearHistory()" class="text-xs text-rose-500 hover:underline">Limpar Todo o Histórico</button>
+                <button onclick="closeHistoryModal()" class="px-4 py-2 text-xs font-bold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl z-50 text-xs font-semibold flex items-center gap-2.5 transform translate-y-20 opacity-0 transition-all duration-300 no-print">
+        <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-base"></i>
+        <span id="toastMessage">Operação realizada com sucesso!</span>
+    </div>
+
+    <script>
+        // State
+        let currentDocType = 'contrato';
+        let items = [
+            { description: 'Diagnóstico Técnico & Análise Preventiva de Infraestrutura', qty: 1, unitPrice: 150.00 },
+            { description: 'Execução de Serviço Especializado de Manutenção', qty: 1, unitPrice: 350.00 }
+        ];
+        let issuerData = { name: '', doc: '', phone: '', email: '', address: '', pix: '' };
+        let signatureImg = null;
+        let legalHash = '';
+
+        // Canvas State
+        let canvas, ctx, isDrawing = false;
+
+        window.onload = function() {
+            document.getElementById('docDate').valueAsDate = new Date();
+            loadIssuerData();
+            initSignatureCanvas();
+            renderItemsForm();
+            refreshLegalHash();
+            render();
+        };
+
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            const icon = document.getElementById('themeIcon');
+            icon.className = document.documentElement.classList.contains('dark') ? 'fa-solid fa-sun text-amber-400' : 'fa-solid fa-moon';
+        }
+
+        function setDocType(type) {
+            currentDocType = type;
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = 'tab-btn py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700';
+            });
+            const activeTab = document.getElementById(`tab-${type}`);
+            if (activeTab) {
+                activeTab.className = 'tab-btn py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 text-brand-600 bg-brand-50 dark:bg-brand-900/40 dark:text-brand-300 shadow-sm';
+            }
+            render();
+        }
+
+        // Dynamic Line Items
+        function addItem() {
+            items.push({ description: '', qty: 1, unitPrice: 0.00 });
+            renderItemsForm();
+            render();
+        }
+
+        function removeItem(index) {
+            if (items.length === 1) {
+                showToast('É necessário pelo menos um item no documento.', 'warning');
+                return;
+            }
+            items.splice(index, 1);
+            renderItemsForm();
+            render();
+        }
+
+        function updateItem(index, field, value) {
+            if (field === 'qty') items[index].qty = parseFloat(value) || 0;
+            else if (field === 'unitPrice') items[index].unitPrice = parseFloat(value) || 0;
+            else items[index][field] = value;
+            render();
+        }
+
+        function renderItemsForm() {
+            const container = document.getElementById('itemsContainer');
+            container.innerHTML = '';
+
+            items.forEach((item, index) => {
+                const row = document.createElement('div');
+                row.className = 'grid grid-cols-12 gap-2 items-center bg-slate-50 dark:bg-slate-700/40 p-2.5 rounded-xl border border-slate-200 dark:border-slate-600';
+                row.innerHTML = `
+                    <div class="col-span-12 sm:col-span-6">
+                        <input type="text" value="${item.description}" oninput="updateItem(${index}, 'description', this.value)" placeholder="Descrição do Serviço / Equipamento" class="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 outline-none">
+                    </div>
+                    <div class="col-span-4 sm:col-span-2">
+                        <input type="number" min="1" value="${item.qty}" oninput="updateItem(${index}, 'qty', this.value)" placeholder="Qtd" class="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 outline-none">
+                    </div>
+                    <div class="col-span-6 sm:col-span-3">
+                        <input type="number" step="0.01" min="0" value="${item.unitPrice}" oninput="updateItem(${index}, 'unitPrice', this.value)" placeholder="Valor (R$)" class="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 outline-none">
+                    </div>
+                    <div class="col-span-2 sm:col-span-1 text-center">
+                        <button onclick="removeItem(${index})" class="text-rose-500 hover:text-rose-700 p-1"><i class="fa-solid fa-trash-can"></i></button>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function calculateTotals() {
+            const subtotal = items.reduce((acc, item) => acc + (item.qty * item.unitPrice), 0);
+            const discType = document.getElementById('discountType').value;
+            const discVal = parseFloat(document.getElementById('discountValue').value) || 0;
+            
+            let discount = 0;
+            if (discType === 'fixed') discount = discVal;
+            else discount = subtotal * (discVal / 100);
+
+            const grandTotal = Math.max(0, subtotal - discount);
+            document.getElementById('grandTotalDisplay').textContent = formatCurrency(grandTotal);
+
+            return { subtotal, discount, grandTotal };
+        }
+
+        function refreshLegalHash() {
+            const seed = Date.now().toString(36) + Math.random().toString(36).substring(2);
+            legalHash = 'SHA256-' + seed.toUpperCase().substring(0, 16);
+        }
+
+        // Render A4 Document
+        function render() {
+            const a4 = document.getElementById('a4Document');
+            const clientName = document.getElementById('clientName').value || 'Nome do Cliente / Contratante';
+            const clientDoc = document.getElementById('clientDoc').value || '---';
+            const clientPhone = document.getElementById('clientPhone').value || '---';
+            const clientAddress = document.getElementById('clientAddress').value || '---';
+
+            const warrantyTerm = document.getElementById('warrantyTerm').value;
+            const legalCity = document.getElementById('legalCity').value || 'Arcoverde - PE';
+            const penaltyFee = document.getElementById('penaltyFee').value || '10%';
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            const techVisitFee = document.getElementById('techVisitFee').value || 'Isento se aprovado';
+            const docDate = formatDate(document.getElementById('docDate').value);
+            const additionalNotes = document.getElementById('additionalNotes').value;
+
+            const { subtotal, discount, grandTotal } = calculateTotals();
+
+            const adviceTexts = {
+                'contrato': '<strong>Análise Jurídica:</strong> Estabelece vínculo bilateral formal com base no Código Civil e CDC. As cláusulas de foro, multa rescisória e preço garantem respaldo judicial.',
+                'termo_servico': '<strong>Análise Jurídica (CDC Art. 26):</strong> Garante a vigência do prazo legal de garantia (90 dias para bens duráveis), disciplina o pagamento de visita técnica e regras claras de rescisão.',
+                'privacidade_lgpd': '<strong>Análise Jurídica (Lei 13.709/2018):</strong> Opcional e indispensável ao coletar CPF, WhatsApp e dados bancários/PIX para emissão de cobranças e contrato.',
+                'isencao_responsabilidade': '<strong>Análise Jurídica:</strong> Protege o prestador contra vícios ocultos pré-existentes em aparelhos antigos, curtos-circuitos da rede do cliente ou oxidação prévia.',
+                'termo_aceite': '<strong>Análise Jurídica:</strong> Prova cabal de entrega do serviço devidamente testado e aprovado pelo cliente, cessando alegações futuras de danos imediatos.',
+                'orcamento': '<strong>Análise Jurídica (CDC Art. 40):</strong> O orçamento prévio vincula o fornecedor após aprovação. Validez fixada em 10 dias conforme o CDC.'
+            };
+
+            document.getElementById('legalAdviceText').innerHTML = adviceTexts[currentDocType] || '';
+
+            const titles = {
+                'contrato': 'CONTRATO DE PRESTAÇÃO DE SERVIÇOS TÉCNICOS',
+                'termo_servico': 'TERMO DE ADESÃO E CONDIÇÕES DE SERVIÇO (CDC)',
+                'privacidade_lgpd': 'TERMO DE PRIVACIDADE E TRATAMENTO DE DADOS (LGPD)',
+                'isencao_responsabilidade': 'TERMO DE ISENÇÃO E LIMITAÇÃO DE RESPONSABILIDADE',
+                'termo_aceite': 'TERMO DE ENTREGA, VISTORIA E ACEITE FINAL',
+                'orcamento': 'ORÇAMENTO TÉCNICO E PROPOSTA COMERCIAL'
+            };
+
+            let mainBody = '';
+
+            if (currentDocType === 'contrato') {
+                mainBody = `
+                    <div class="space-y-3 text-justify">
+                        <p><strong>CLÁUSULA 1ª - DO OBJETO:</strong> O presente contrato tem por objetivo a prestação dos serviços técnicos especializados descritos na tabela abaixo, a serem executados pelo CONTRATADO em favor do CONTRATANTE:</p>
+                        ${renderTable(subtotal, discount, grandTotal)}
+                        <p><strong>CLÁUSULA 2ª - DO PREÇO E INADIMPLEMENTO:</strong> Pelos serviços, o CONTRATANTE pagará o valor total de <strong>${formatCurrency(grandTotal)}</strong> via <strong>${paymentMethod}</strong>. O atraso no pagamento sujeitará o devedor à multa moratória de <strong>${penaltyFee}</strong> acrescida de juros de 1% ao mês.</p>
+                        <p><strong>CLÁUSULA 3ª - DA GARANTIA LEGAL:</strong> Nos termos do Art. 26 do Código de Defesa do Consumidor (Lei 8.078/90), os serviços possuem garantia de <strong>${warrantyTerm}</strong>. A garantia não cobre mau uso ou intervenção de terceiros.</p>
+                        <p><strong>CLÁUSULA 4ª - DO FORO:</strong> Para dirimir controvérsias deste contrato, as partes elegem o foro da Comarca de <strong>${legalCity}</strong>.</p>
+                        ${additionalNotes ? `<p><strong>CLÁUSULA 5ª - DISPOSIÇÕES ESPECIAIS:</strong> ${additionalNotes}</p>` : ''}
+                    </div>
+                `;
+            } else if (currentDocType === 'termo_servico') {
+                mainBody = `
+                    <div class="space-y-3 text-justify">
+                        <p>Este Termo rege a prestação de serviços técnicos, em estrita observância ao Código de Defesa do Consumidor (CDC):</p>
+                        ${renderTable(subtotal, discount, grandTotal)}
+                        <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg space-y-2">
+                            <p><strong>1. Visita Técnica e Diagnóstico:</strong> Fica estabelecida a taxa de visita/avaliação técnica no valor de <strong>${techVisitFee}</strong>.</p>
+                            <p><strong>2. Prazo de Garantia:</strong> Coberto por <strong>${warrantyTerm}</strong> a contar da entrega do serviço.</p>
+                            <p><strong>3. Cancelamento:</strong> O cancelamento imotivado após início da execução acarretará multa rescisória de <strong>${penaltyFee}</strong> sobre o saldo devedor.</p>
+                        </div>
+                        ${additionalNotes ? `<p><strong>Anotações do Prestador:</strong> ${additionalNotes}</p>` : ''}
+                    </div>
+                `;
+            } else if (currentDocType === 'privacidade_lgpd') {
+                mainBody = `
+                    <div class="space-y-3 text-justify">
+                        <p>Em conformidade com a <strong>Lei Geral de Proteção de Dados Pessoais (LGPD - Lei nº 13.709/2018)</strong>, o CONTRATANTE autoriza expressamente o tratamento de seus dados pessoais para as finalidades abaixo especificadas:</p>
+                        <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg space-y-2">
+                            <p><strong>• Dados Coletados:</strong> Nome, CPF/CNPJ, Endereço, Telefone/WhatsApp e Chave PIX.</p>
+                            <p><strong>• Finalidade Única:</strong> Emissão de notas, orçamentos, contratos de prestação de serviços e cobranças financeiras legítimas.</p>
+                            <p><strong>• Direitos do Titular:</strong> O titular pode solicitar a confirmação, correção ou eliminação dos dados a qualquer momento via e-mail: <u>${issuerData.email || 'contato do prestador'}</u>.</p>
+                        </div>
+                        <p>O prestador compromete-se a não compartilhar nem vender os dados para terceiros não autorizados.</p>
+                    </div>
+                `;
+            } else if (currentDocType === 'isencao_responsabilidade') {
+                mainBody = `
+                    <div class="space-y-3 text-justify">
+                        <div class="p-3 bg-rose-50 text-rose-950 border border-rose-200 rounded-lg">
+                            <strong class="block mb-1 text-xs">AVISO TÉCNICO DE RISCO E LIMITAÇÃO DE RESPONSABILIDADE</strong>
+                            O cliente declara ciência de que equipamentos eletrônicos ou redes elétricas antigas podem apresentar defeitos ocultos pré-existentes.
+                        </div>
+                        <p><strong>Descrição do Equipamento / Instalação:</strong></p>
+                        ${renderTable(subtotal, discount, grandTotal)}
+                        <p><strong>Declaração de Isenção:</strong> O prestador exime-se de responsabilidade por danos decorrentes de instabilidade na rede elétrica do local, oxidação severa prévia ou componentes que venham a falhar por desgaste natural durante os testes de estresse.</p>
+                        ${additionalNotes ? `<p><strong>Riscos Identificados e Comunicados:</strong> ${additionalNotes}</p>` : ''}
+                    </div>
+                `;
+            } else if (currentDocType === 'termo_aceite') {
+                mainBody = `
+                    <div class="space-y-3 text-justify">
+                        <p>Pelo presente termo, o cliente declara que inspecionou, testou e recebeu em perfeitas condições de funcionamento os serviços e equipamentos abaixo discriminados:</p>
+                        ${renderTable(subtotal, discount, grandTotal)}
+                        <div class="p-3 bg-emerald-50 text-emerald-900 border border-emerald-200 rounded-lg">
+                            <p><strong>Declaração de Conformidade:</strong> O cliente confirma a conclusão satisfatória da ordem de serviço, atestando que os equipamentos foram entregues limpos, testados e sem avarias aparentes nesta data.</p>
+                        </div>
+                        ${additionalNotes ? `<p><strong>Ressalvas do Cliente:</strong> ${additionalNotes}</p>` : ''}
+                    </div>
+                `;
+            } else if (currentDocType === 'orcamento') {
+                mainBody = `
+                    <div class="space-y-3 text-justify">
+                        <p>Proposta comercial sujeita às condições do Art. 40 do Código de Defesa do Consumidor:</p>
+                        ${renderTable(subtotal, discount, grandTotal)}
+                        <div class="grid grid-cols-2 gap-3 bg-slate-50 p-3 rounded-lg border border-slate-200 text-[11px]">
+                            <div><strong>Validade do Orçamento:</strong> 10 Dias úteis</div>
+                            <div><strong>Forma de Pagamento:</strong> ${paymentMethod}</div>
+                            <div><strong>Garantia Prevista:</strong> ${warrantyTerm}</div>
+                            <div><strong>Visita Técnica:</strong> ${techVisitFee}</div>
+                        </div>
+                        ${additionalNotes ? `<p><strong>Condições Especiais:</strong> ${additionalNotes}</p>` : ''}
+                    </div>
+                `;
+            }
+
+            a4.innerHTML = `
+                <div>
+                    <!-- Header -->
+                    <div class="flex justify-between items-start border-b-2 border-slate-900 pb-3 mb-4">
+                        <div>
+                            <h2 class="text-base font-black text-slate-900 uppercase">${issuerData.name || 'NOME DO PRESTADOR / EMPRESA'}</h2>
+                            <p class="text-[10px] text-slate-600">${issuerData.doc ? 'CPF/CNPJ: ' + issuerData.doc : 'Cadastre seus dados no menu "Meus Dados"'}</p>
+                            <p class="text-[10px] text-slate-600">${issuerData.phone ? 'Tel: ' + issuerData.phone : ''} ${issuerData.email ? '| ' + issuerData.email : ''}</p>
+                            <p class="text-[10px] text-slate-600">${issuerData.address || ''}</p>
+                            ${issuerData.pix ? `<p class="text-[10px] font-bold text-brand-700">Chave PIX: ${issuerData.pix}</p>` : ''}
+                        </div>
+                        <div class="text-right">
+                            <span class="inline-block px-2.5 py-1 bg-slate-900 text-white font-black text-[10px] rounded uppercase">${titles[currentDocType]}</span>
+                            <p class="text-[10px] text-slate-500 mt-1">Data: <strong>${docDate}</strong></p>
+                            <p class="text-[9px] text-slate-400 font-mono">ID: ${legalHash}</p>
+                        </div>
+                    </div>
+
+                    <!-- Client Info Box -->
+                    <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200 mb-4 grid grid-cols-2 gap-2 text-[11px]">
+                        <div>
+                            <span class="font-bold text-slate-400 uppercase text-[9px] block">CONTRATANTE / CLIENTE</span>
+                            <span class="font-bold text-slate-900">${clientName}</span>
+                            <span class="block text-slate-600">Doc: ${clientDoc}</span>
+                        </div>
+                        <div>
+                            <span class="font-bold text-slate-400 uppercase text-[9px] block">CONTATO & LOCAL</span>
+                            <span class="block text-slate-800">${clientPhone}</span>
+                            <span class="block text-slate-600 truncate">${clientAddress}</span>
+                        </div>
+                    </div>
+
+                    <!-- Main Dynamic Content -->
+                    ${mainBody}
+                </div>
+
+                <!-- Footer Signatures & Legal Verification -->
+                <div class="pt-6 mt-6 border-t border-slate-200">
+                    <div class="grid grid-cols-2 gap-6 text-center text-[10px] mb-4">
+                        <div class="flex flex-col items-center justify-end">
+                            ${signatureImg ? `<img src="${signatureImg}" class="h-10 mb-1 object-contain">` : ''}
+                            <div class="w-full border-t border-slate-800 pt-1 font-bold">${issuerData.name || 'Prestador de Serviço'}</div>
+                            <span class="text-slate-500 text-[9px]">CONTRATADO</span>
+                        </div>
+                        <div class="flex flex-col items-center justify-end">
+                            <div class="w-full border-t border-slate-800 pt-1 font-bold">${clientName}</div>
+                            <span class="text-slate-500 text-[9px]">CONTRATANTE</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-100 p-2 rounded text-[8px] text-slate-500 flex items-center justify-between font-mono">
+                        <span>Validação Eletrônica MP 2.200-2/2001 • Carimbo de Hora: ${docDate}</span>
+                        <span>Hash: ${legalHash}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderTable(subtotal, discount, grandTotal) {
+            let rows = items.map(i => `
+                <tr class="border-b border-slate-200 text-[10px]">
+                    <td class="py-1.5 px-2.5">${i.description || 'Sem descrição'}</td>
+                    <td class="py-1.5 px-2.5 text-center">${i.qty}</td>
+                    <td class="py-1.5 px-2.5 text-right">${formatCurrency(i.unitPrice)}</td>
+                    <td class="py-1.5 px-2.5 text-right font-bold">${formatCurrency(i.qty * i.unitPrice)}</td>
+                </tr>
+            `).join('');
+
+            return `
+                <div class="border border-slate-200 rounded-lg overflow-hidden my-2">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-100 text-[9px] uppercase font-black text-slate-700">
+                            <tr>
+                                <th class="py-1.5 px-2.5">Descrição do Item / Serviço</th>
+                                <th class="py-1.5 px-2.5 text-center">Qtd</th>
+                                <th class="py-1.5 px-2.5 text-right">Unitário</th>
+                                <th class="py-1.5 px-2.5 text-right">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>${rows}</tbody>
+                        <tfoot class="bg-slate-50 font-bold text-[10px] border-t border-slate-200">
+                            ${discount > 0 ? `
+                                <tr>
+                                    <td colspan="3" class="py-1 px-2.5 text-right text-slate-500">Subtotal:</td>
+                                    <td class="py-1 px-2.5 text-right text-slate-600">${formatCurrency(subtotal)}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" class="py-1 px-2.5 text-right text-emerald-600">Desconto:</td>
+                                    <td class="py-1 px-2.5 text-right text-emerald-600">-${formatCurrency(discount)}</td>
+                                </tr>
+                            ` : ''}
+                            <tr>
+                                <td colspan="3" class="py-1.5 px-2.5 text-right uppercase text-slate-900">Total Final:</td>
+                                <td class="py-1.5 px-2.5 text-right text-brand-700 text-xs font-black">${formatCurrency(grandTotal)}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            `;
+        }
+
+        // Signature Pad Handlers
+        function initSignatureCanvas() {
+            canvas = document.getElementById('sigCanvas');
+            ctx = canvas.getContext('2d');
+            ctx.lineWidth = 2.5;
+            ctx.strokeStyle = '#0f172a';
+
+            function getPos(e) {
+                const rect = canvas.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                return { x: clientX - rect.left, y: clientY - rect.top };
+            }
+
+            function startDraw(e) { isDrawing = true; const p = getPos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); }
+            function draw(e) { if (!isDrawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); }
+            function stopDraw() { if (isDrawing) { isDrawing = false; signatureImg = canvas.toDataURL(); render(); } }
+
+            canvas.addEventListener('mousedown', startDraw);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDraw);
+            canvas.addEventListener('touchstart', startDraw);
+            canvas.addEventListener('touchmove', draw);
+            canvas.addEventListener('touchend', stopDraw);
+        }
+
+        function clearSignature() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            signatureImg = null;
+            render();
+        }
+
+        // Actions
+        function copyForWhatsApp() {
+            const clientName = document.getElementById('clientName').value || 'Cliente';
+            const { grandTotal } = calculateTotals();
+
+            let text = `*${currentDocType.toUpperCase().replace('_', ' ')}*\n`;
+            text += `👤 *Cliente:* ${clientName}\n`;
+            text += `🏢 *Prestador:* ${issuerData.name || 'Empresa'}\n\n`;
+            text += `📄 *ITENS / SERVIÇOS:*\n`;
+            items.forEach((item, idx) => {
+                text += `${idx + 1}. ${item.description} (${item.qty}x) - *${formatCurrency(item.qty * item.unitPrice)}*\n`;
+            });
+            text += `\n💵 *VALOR TOTAL:* *${formatCurrency(grandTotal)}*\n`;
+            text += `🔒 *Garantia CDC:* ${document.getElementById('warrantyTerm').value}\n`;
+            if (issuerData.pix) text += `🔑 *Chave PIX:* ${issuerData.pix}\n`;
+            text += `\n_Acesse o documento formal assinado em PDF._`;
+
+            const dummy = document.createElement("textarea");
+            document.body.appendChild(dummy);
+            dummy.value = text;
+            dummy.select();
+            document.execCommand("copy");
+            document.body.removeChild(dummy);
+
+            showToast('Texto formatado para WhatsApp copiado!');
+        }
+
+        function generatePDF() {
+            const element = document.getElementById('a4Document');
+            const clientName = document.getElementById('clientName').value || 'Cliente';
+            
+            const opt = {
+                margin: 0,
+                filename: `${currentDocType}_${clientName.replace(/\s+/g, '_')}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save();
+            showToast('Gerando documento em PDF...');
+        }
+
+        // Issuer Modal
+        function openIssuerModal() {
+            document.getElementById('issuerName').value = issuerData.name;
+            document.getElementById('issuerDoc').value = issuerData.doc;
+            document.getElementById('issuerPhone').value = issuerData.phone;
+            document.getElementById('issuerEmail').value = issuerData.email;
+            document.getElementById('issuerAddress').value = issuerData.address;
+            document.getElementById('issuerPix').value = issuerData.pix;
+            document.getElementById('issuerModal').classList.remove('hidden');
+        }
+        function closeIssuerModal() { document.getElementById('issuerModal').classList.add('hidden'); }
+
+        function saveIssuerData() {
+            issuerData = {
+                name: document.getElementById('issuerName').value,
+                doc: document.getElementById('issuerDoc').value,
+                phone: document.getElementById('issuerPhone').value,
+                email: document.getElementById('issuerEmail').value,
+                address: document.getElementById('issuerAddress').value,
+                pix: document.getElementById('issuerPix').value
+            };
+            localStorage.setItem('docmaker_legal_issuer', JSON.stringify(issuerData));
+            closeIssuerModal();
+            render();
+            showToast('Dados do prestador salvos!');
+        }
+
+        function loadIssuerData() {
+            const saved = localStorage.getItem('docmaker_legal_issuer');
+            if (saved) {
+                try { issuerData = JSON.parse(saved); } catch (e) {}
+            }
+        }
+
+        // History
+        function saveToHistory() {
+            const history = getHistory();
+            const { grandTotal } = calculateTotals();
+            const record = {
+                id: Date.now(),
+                date: new Date().toLocaleDateString('pt-BR'),
+                type: currentDocType,
+                client: document.getElementById('clientName').value || 'Cliente',
+                total: grandTotal,
+                items: [...items]
+            };
+            history.unshift(record);
+            localStorage.setItem('docmaker_legal_history', JSON.stringify(history.slice(0, 20)));
+            showToast('Documento registrado no histórico!');
+        }
+
+        function getHistory() {
+            const saved = localStorage.getItem('docmaker_legal_history');
+            return saved ? JSON.parse(saved) : [];
+        }
+
+        function openHistoryModal() {
+            const history = getHistory();
+            const container = document.getElementById('historyList');
+            container.innerHTML = '';
+
+            if (history.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">Nenhum documento no histórico.</p>`;
+            } else {
+                history.forEach(item => {
+                    const el = document.createElement('div');
+                    el.className = 'p-3 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl flex items-center justify-between text-xs';
+                    el.innerHTML = `
+                        <div>
+                            <span class="font-bold block">${item.client}</span>
+                            <span class="text-[10px] text-slate-400 uppercase">${item.type.replace('_', ' ')} • ${item.date}</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="font-black text-brand-600 block">${formatCurrency(item.total)}</span>
+                            <button onclick="loadFromHistory(${item.id})" class="text-[10px] text-slate-500 underline">Carregar</button>
+                        </div>
+                    `;
+                    container.appendChild(el);
+                });
+            }
+            document.getElementById('historyModal').classList.remove('hidden');
+        }
+
+        function closeHistoryModal() { document.getElementById('historyModal').classList.add('hidden'); }
+
+        function loadFromHistory(id) {
+            const record = getHistory().find(h => h.id === id);
+            if (record) {
+                setDocType(record.type);
+                document.getElementById('clientName').value = record.client;
+                items = [...record.items];
+                renderItemsForm();
+                render();
+                closeHistoryModal();
+                showToast('Documento restaurado!');
+            }
+        }
+
+        function clearHistory() {
+            localStorage.removeItem('docmaker_legal_history');
+            openHistoryModal();
+            showToast('Histórico apagado.');
+        }
+
+        function formatCurrency(val) {
+            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val || 0);
+        }
+
+        function formatDate(str) {
+            if (!str) return new Date().toLocaleDateString('pt-BR');
+            const p = str.split('-');
+            return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : str;
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').textContent = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

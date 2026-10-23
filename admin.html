@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DockMaker PRO | Painel Administrativo</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    <!-- Firebase SDKs (Auth & Firestore) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <style>
+        body { background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="index.html">
+                <i class="bi bi-shield-lock-fill text-warning me-2"></i><strong>DockMaker PRO</strong> <span class="badge bg-warning text-dark ms-2">Painel Admin</span>
+            </a>
+            <div class="d-flex align-items-center gap-3">
+                <a href="index.html" class="btn btn-outline-light btn-sm"><i class="bi bi-house me-1"></i> Voltar ao Portal</a>
+                <button onclick="logout()" class="btn btn-outline-danger btn-sm"><i class="bi bi-box-arrow-right"></i> Sair</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold text-dark mb-1">Gestão de Usuários & Permissões</h2>
+                <p class="text-muted small">Controle quais ferramentas cada e-mail pode aceder e gerencie solicitações de acesso.</p>
+            </div>
+            <button class="btn btn-primary" onclick="abrirModalNovoUsuario()"><i class="bi bi-person-plus-fill me-1"></i> Cadastrar Novo Usuário</button>
+        </div>
+
+        <!-- TABELA DE USUÁRIOS -->
+        <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th class="ps-4">Nome / Colaborador</th>
+                                <th>E-mail</th>
+                                <th class="text-center">Gerador de Contratos</th>
+                                <th class="text-center">Relatórios de Desempenho</th>
+                                <th class="text-center">Status Admin</th>
+                                <th class="text-end pe-4">Ações de Segurança</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-usuarios-body">
+                            <tr><td colspan="6" class="text-center py-4 text-muted">A ligar ao Firebase...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL NOVO USUÁRIO -->
+    <div class="modal fade" id="modalUsuario" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-person-plus me-2 text-primary"></i>Cadastrar Colaborador</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form onsubmit="salvarUsuarioFirestore(event)">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Nome Completo</label>
+                            <input type="text" id="admin-nome" class="form-control" required placeholder="Ex: Carlos Oliveira">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">E-mail Profissional</label>
+                            <input type="email" id="admin-email" class="form-control" required placeholder="usuario@empresa.com.br">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Permissões Iniciais de Acesso</label>
+                            <div class="form-check form-switch mb-2">
+                                <input class="form-check-input" type="checkbox" id="perm-contratos" checked>
+                                <label class="form-check-label small" for="perm-contratos">Gerador de Contratos & Termos</label>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="perm-relatorios" checked>
+                                <label class="form-check-label small" for="perm-relatorios">Relatórios de Desempenho</label>
+                            </div>
+                        </div>
+                        <div class="d-grid gap-2 pt-2">
+                            <button type="submit" class="btn btn-primary fw-semibold">Registar & Liberar Acesso</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDKUovo_4RrB8Igv8jJLEG31E43NB4Uwwk",
+            authDomain: "dockmaker-bd8eb.firebaseapp.com",
+            projectId: "dockmaker-bd8eb",
+            storageBucket: "dockmaker-bd8eb.firebasestorage.app",
+            messagingSenderId: "27485576136",
+            appId: "1:27485576136:web:f3112e697068b80a5f3efd",
+            measurementId: "G-C4MN1FRMXX"
+        };
+
+        try { 
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig); 
+            }
+        } catch(e) {
+            console.error(e);
+        }
+        
+        const db = firebase.firestore();
+        
+        // Força o Long-Polling para prevenir bloqueios de rede em telemóveis e redes móveis
+        try {
+            db.settings({ experimentalForceLongPolling: true });
+        } catch(e) {}
+
+        let modalInst = null;
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const modalEl = document.getElementById('modalUsuario');
+            if (modalEl) modalInst = new bootstrap.Modal(modalEl);
+
+            firebase.auth().onAuthStateChanged((user) => {
+                if (!user) {
+                    window.location.href = "index.html";
+                    return;
+                }
+                carregarUsuarios();
+            });
+        });
+
+        function carregarUsuarios() {
+            // Temporizador de segurança (avisa se demorar mais de 8 segundos)
+            const timer = setTimeout(() => {
+                const tbody = document.getElementById('tabela-usuarios-body');
+                if (tbody && tbody.innerHTML.includes("A ligar ao Firebase...")) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-warning">A conexão demorou a responder. Verifique a sua ligação ou recarregue a página.</td></tr>';
+                }
+            }, 8000);
+
+            db.collection("usuarios").get().then((snapshot) => {
+                clearTimeout(timer);
+                const tbody = document.getElementById('tabela-usuarios-body');
+                if (!tbody) return;
+                tbody.innerHTML = '';
+
+                if (snapshot.empty) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">Coleção vazia. Nenhum utilizador registado ainda.</td></tr>';
+                    return;
+                }
+
+                snapshot.forEach((doc) => {
+                    const u = doc.data();
+                    tbody.innerHTML += `
+                        <tr>
+                            <td class="ps-4 fw-bold text-dark">${u.nome || 'Sem Nome'}</td>
+                            <td class="text-muted small">${u.email}</td>
+                            <td class="text-center">
+                                <div class="form-check form-switch d-inline-block">
+                                    <input class="form-check-input" type="checkbox" ${u.acessoContratos ? 'checked' : ''} onchange="togglePermissao('${u.email}', 'acessoContratos', this.checked)">
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <div class="form-check form-switch d-inline-block">
+                                    <input class="form-check-input" type="checkbox" ${u.acessoRelatorios ? 'checked' : ''} onchange="togglePermissao('${u.email}', 'acessoRelatorios', this.checked)">
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                ${u.isAdmin ? '<span class="badge bg-danger">Administrador</span>' : '<span class="badge bg-secondary">Usuário</span>'}
+                            </td>
+                            <td class="text-end pe-4">
+                                <button onclick="enviarRedefinicaoSenha('${u.email}')" class="btn btn-outline-primary btn-sm me-1" title="Reset de Senha">
+                                    <i class="bi bi-key-fill"></i>
+                                </button>
+                                <button onclick="removerUsuario('${u.email}')" class="btn btn-outline-danger btn-sm" title="Remover">
+                                    <i class="bi bi-trash-fill"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }).catch((error) => {
+                clearTimeout(timer);
+                console.error("Erro detalhado:", error);
+                const tbody = document.getElementById('tabela-usuarios-body');
+                if (tbody) {
+                    tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-danger fw-bold">Erro Firebase: ${error.message}</td></tr>`;
+                }
+            });
+        }
+
+        function togglePermissao(email, campo, valor) {
+            if (!email) return;
+            db.collection("usuarios").doc(email.toLowerCase()).update({ [campo]: valor })
+              .catch(err => alert("Erro ao atualizar: " + err.message));
+        }
+
+        function enviarRedefinicaoSenha(email) {
+            if (!email) return;
+            if (confirm(`Enviar e-mail de redefinição para ${email}?`)) {
+                firebase.auth().sendPasswordResetEmail(email)
+                    .then(() => alert("E-mail enviado com sucesso!"))
+                    .catch(err => alert("Erro: " + err.message));
+            }
+        }
+
+        function abrirModalNovoUsuario() {
+            if (modalInst) modalInst.show();
+        }
+
+        function salvarUsuarioFirestore(e) {
+            e.preventDefault();
+            const nome = document.getElementById('admin-nome').value.trim();
+            const email = document.getElementById('admin-email').value.trim().toLowerCase();
+            const acessoContratos = document.getElementById('perm-contratos').checked;
+            const acessoRelatorios = document.getElementById('perm-relatorios').checked;
+
+            db.collection("usuarios").doc(email).set({
+                nome: nome,
+                email: email,
+                acessoContratos: acessoContratos,
+                acessoRelatorios: acessoRelatorios,
+                isAdmin: false
+            }, { merge: true })
+            .then(() => {
+                alert(`Colaborador ${nome} registado com sucesso!`);
+                document.getElementById('admin-nome').value = '';
+                document.getElementById('admin-email').value = '';
+                if (modalInst) modalInst.hide();
+                carregarUsuarios();
+            })
+            .catch(err => alert("Erro ao salvar: " + err.message));
+        }
+
+        function removerUsuario(email) {
+            if (!email) return;
+            if (confirm(`Remover ${email}?`)) {
+                db.collection("usuarios").doc(email.toLowerCase()).delete()
+                    .then(() => carregarUsuarios())
+                    .catch(err => alert("Erro ao remover: " + err.message));
+            }
+        }
+
+        function logout() {
+            firebase.auth().signOut().then(() => window.location.href = "index.html");
+        }
+    </script>
+</body>
+</html>
