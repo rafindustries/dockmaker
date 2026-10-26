@@ -1,25 +1,11 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="h-full">
+<html lang="pt-BR" class="h-full dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DockMaker PRO - Gerador Jurídico & Contratos</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome 6 Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <!-- Favicon SVG Transparente Embutido -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 38' fill='none'><rect x='1' y='1' width='28' height='36' rx='4' stroke='%230D6EFD' stroke-width='2.5' fill='none'/><path d='M21 1V9H29' stroke='%230D6EFD' stroke-width='2.5'/><path d='M15 12V26M9 17H21M9 17L6 23H12L9 17ZM21 17L18 23H24L21 17ZM12 27H18' stroke='white' stroke-width='2' stroke-linecap='round'/><path d='M20 27L24 31L32 21' stroke='%23FFB900' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'/></svg>">
-    <!-- html2pdf.js for Client-side PDF generation -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
-    <!-- Firebase SDKs Compat -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -30,28 +16,49 @@
                     },
                     colors: {
                         brand: {
-                            50: '#f0f7ff',
-                            100: '#e0effe',
-                            500: '#3b82f6',
-                            600: '#2563eb',
-                            700: '#1d4ed8',
-                            800: '#1e40af',
-                            900: '#1e3a8a',
+                            darkBg: '#030712',      /* Fundo ultra escuro da landing/dashboard */
+                            cardBg: '#0b0f19',      /* Fundo dos cards escuros */
+                            cardBorder: '#1f293d',  /* Bordas elegantes dos cards */
+                            blue: '#2563eb',        /* Azul Primário */
+                            blueHover: '#1d4ed8',
+                            blueLight: '#3b82f6',   /* Azul Neon / Destaque */
+                            yellow: '#f59e0b',      /* Amarelo / Dourado Neon */
+                            yellowHover: '#d97706',
+                            textMuted: '#94a3b8'    /* Texto secundário */
                         }
                     }
                 }
             }
         }
     </script>
+    <!-- Font Awesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Favicon SVG Transparente Embutido -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 38' fill='none'><rect x='1' y='1' width='28' height='36' rx='4' stroke='%233b82f6' stroke-width='2.5' fill='none'/><path d='M21 1V9H29' stroke='%233b82f6' stroke-width='2.5'/><path d='M15 12V26M9 17H21M9 17L6 23H12L9 17ZM21 17L18 23H24L21 17ZM12 27H18' stroke='white' stroke-width='2' stroke-linecap='round'/><path d='M20 27L24 31L32 21' stroke='%23f59e0b' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+    <!-- html2pdf.js for Client-side PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <!-- Firebase SDKs Compat -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
     <style>
-        /* Custom Scrollbar for modern feel */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
-        .dark ::-webkit-scrollbar-thumb { background: #334155; }
+        body {
+            background-color: #030712;
+            color: #f8fafc;
+            font-family: 'Inter', sans-serif;
+        }
 
-        /* Document Page Simulation */
+        /* Custom Scrollbar for modern feel */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #030712; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #334155; }
+
+        /* Document Page Simulation (Mantém branco para impressão e PDF perfeitos) */
         .page-a4 {
             width: 210mm;
             min-height: 297mm;
@@ -59,22 +66,12 @@
             margin: 0 auto;
             background: #ffffff;
             color: #0f172a;
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
             box-sizing: border-box;
             position: relative;
             font-size: 11px;
             line-height: 1.5;
             transition: transform 0.2s ease-out;
-        }
-
-        /* Glassmorphism details */
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
-        }
-        .dark .glass-panel {
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(12px);
         }
 
         /* Print Layout Rules */
@@ -99,7 +96,7 @@
         }
     </style>
 </head>
-<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans min-h-full flex flex-col transition-colors duration-200 antialiased selection:bg-brand-500 selection:text-white">
+<body class="bg-brand-darkBg text-slate-100 h-full flex flex-col antialiased selection:bg-brand-blue selection:text-white">
 
     <!-- Firebase Auth & Route Protection -->
     <script>
@@ -125,9 +122,7 @@
                         alert("Acesso negado para este módulo!");
                         window.location.href = "index.html";
                     }
-                }).catch(() => {
-                    // Fail-safe protection if network error
-                });
+                }).catch(() => {});
             }
         });
 
@@ -137,45 +132,42 @@
     </script>
 
     <!-- Top Navigation Header -->
-    <header class="bg-slate-900 text-white shadow-xl sticky top-0 z-40 no-print border-b border-slate-800/80">
+    <header class="bg-brand-cardBg/90 backdrop-blur-md border-b border-brand-cardBorder sticky top-0 z-40 no-print">
         <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             
             <!-- Left Branding & Back -->
             <div class="flex items-center space-x-3 sm:space-x-4">
-                <button onclick="voltarAoMenu()" class="p-2.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all" title="Voltar ao Painel Principal">
+                <button onclick="voltarAoMenu()" class="p-2.5 text-slate-400 hover:text-white hover:bg-slate-800/60 rounded-xl transition-all border border-slate-700/50" title="Voltar ao Painel Principal">
                     <i class="fa-solid fa-arrow-left text-base"></i>
                 </button>
                 <div class="h-6 w-px bg-slate-800 hidden sm:block"></div>
                 <div class="flex items-center space-x-3 cursor-pointer" onclick="voltarAoMenu()">
                     <svg width="180" height="36" viewBox="0 0 220 42" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect x="2" y="2" width="28" height="36" rx="4" stroke="#e0effe" stroke-width="2.2" fill="none"/>
+                        <rect x="2" y="2" width="28" height="36" rx="4" stroke="#3b82f6" stroke-width="2.2" fill="none"/>
                         <path d="M22 2V10H30" stroke="#3b82f6" stroke-width="2.2" stroke-linejoin="round"/>
                         <path d="M16 13V27M10 18H22M10 18L7 24H13L10 18ZM22 18L19 24H25L22 18ZM13 28H19" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
-                        <path d="M22 28L26 32L34 22" stroke="#FFB900" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M22 28L26 32L34 22" stroke="#f59e0b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
                         <text x="44" y="27" font-family="'Inter', sans-serif" font-weight="800" font-size="20" fill="white">DockMaker</text>
                         <text x="160" y="27" font-family="'Inter', sans-serif" font-weight="900" font-size="20" fill="#3b82f6">PRO</text>
-                        <line x1="160" y1="31" x2="202" y2="31" stroke="#FFB900" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="160" y1="31" x2="202" y2="31" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round"/>
                     </svg>
                 </div>
             </div>
 
             <!-- Central Status Indicator -->
-            <div class="hidden lg:flex items-center gap-2 px-3 py-1 bg-slate-800/80 rounded-full border border-slate-700/60 text-xs text-slate-300">
+            <div class="hidden lg:flex items-center gap-2 px-3 py-1 bg-slate-900/80 rounded-full border border-slate-800 text-xs text-slate-300">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                 <span class="font-medium text-[11px]" id="currentDocBadge">Contrato de Prestação de Serviços</span>
             </div>
 
             <!-- Right Actions Toolbar -->
             <div class="flex items-center space-x-2">
-                <button onclick="toggleDarkMode()" class="p-2.5 text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl transition-colors" title="Alternar Tema Escuro/Claro">
-                    <i id="themeIcon" class="fa-solid fa-moon text-sm"></i>
-                </button>
-                <button onclick="openHistoryModal()" class="px-3.5 py-2 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl transition-all flex items-center gap-2 border border-slate-700/80">
-                    <i class="fa-solid fa-clock-rotate-left text-brand-400"></i>
+                <button onclick="openHistoryModal()" class="px-3.5 py-2 text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-slate-200 rounded-xl transition-all flex items-center gap-2 border border-slate-800">
+                    <i class="fa-solid fa-clock-rotate-left text-brand-blueLight"></i>
                     <span class="hidden sm:inline">Histórico</span>
                 </button>
-                <button onclick="openIssuerModal()" class="px-3.5 py-2 text-xs font-bold bg-brand-600 hover:bg-brand-700 text-white rounded-xl transition-all flex items-center gap-2 shadow-sm shadow-brand-600/30">
-                    <i class="fa-solid fa-building-user"></i>
+                <button onclick="openIssuerModal()" class="px-3.5 py-2 text-xs font-bold bg-brand-blue hover:bg-brand-blueHover text-white rounded-xl transition-all flex items-center gap-2 shadow-lg shadow-blue-600/30">
+                    <i class="fa-solid fa-building-user text-brand-yellow"></i>
                     <span class="hidden sm:inline">Meus Dados</span>
                 </button>
             </div>
@@ -189,10 +181,10 @@
         <section class="lg:col-span-6 space-y-6 no-print">
             
             <!-- Category & Model Selector Card -->
-            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200/80 dark:border-slate-700/80 p-4 space-y-3">
+            <div class="bg-brand-cardBg border border-brand-cardBorder rounded-2xl shadow-xl p-5 space-y-3">
                 <div class="flex items-center justify-between">
-                    <span class="text-[11px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
-                        <i class="fa-solid fa-cubes text-brand-500"></i> Seletor de Modelo Jurídico (10 Modelos)
+                    <span class="text-[11px] font-black uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                        <i class="fa-solid fa-cubes text-brand-blueLight"></i> Seletor de Modelo Jurídico (10 Modelos)
                     </span>
                     <span class="text-[10px] text-slate-400 font-medium">Conforme CDC & LGPD</span>
                 </div>
@@ -204,42 +196,42 @@
             </div>
 
             <!-- Form Body Controls -->
-            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200/80 dark:border-slate-700/80 p-5 sm:p-6 space-y-6">
+            <div class="bg-brand-cardBg border border-brand-cardBorder rounded-2xl shadow-xl p-5 sm:p-6 space-y-6">
                 
                 <!-- Client Qualification Section -->
                 <div>
-                    <h3 class="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3 flex items-center gap-2">
-                        <i class="fa-solid fa-user-tie text-brand-600"></i> Qualificação do Cliente / Segunda Parte
+                    <h3 class="text-xs font-black uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-user-tie text-brand-blueLight"></i> Qualificação do Cliente / Segunda Parte
                     </h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div class="sm:col-span-2">
-                            <label class="block text-[11px] font-bold mb-1 text-slate-700 dark:text-slate-300">Nome Completo / Razão Social</label>
-                            <input type="text" id="clientName" oninput="render()" placeholder="Ex: Carlos Eduardo de Oliveira" class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-700/60 focus:ring-2 focus:ring-brand-500 outline-none transition-all">
+                            <label class="block text-[11px] font-bold mb-1 text-slate-300">Nome Completo / Razão Social</label>
+                            <input type="text" id="clientName" oninput="render()" placeholder="Ex: Carlos Eduardo de Oliveira" class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-700/80 bg-slate-900 text-white focus:ring-2 focus:ring-brand-blue outline-none transition-all">
                         </div>
                         <div>
-                            <label class="block text-[11px] font-bold mb-1 text-slate-700 dark:text-slate-300">CPF ou CNPJ</label>
-                            <input type="text" id="clientDoc" oninput="render()" placeholder="000.000.000-00" class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-700/60 focus:ring-2 focus:ring-brand-500 outline-none transition-all">
+                            <label class="block text-[11px] font-bold mb-1 text-slate-300">CPF ou CNPJ</label>
+                            <input type="text" id="clientDoc" oninput="render()" placeholder="000.000.000-00" class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-700/80 bg-slate-900 text-white focus:ring-2 focus:ring-brand-blue outline-none transition-all">
                         </div>
                         <div>
-                            <label class="block text-[11px] font-bold mb-1 text-slate-700 dark:text-slate-300">Telefone / WhatsApp</label>
-                            <input type="text" id="clientPhone" oninput="render()" placeholder="(00) 00000-0000" class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-700/60 focus:ring-2 focus:ring-brand-500 outline-none transition-all">
+                            <label class="block text-[11px] font-bold mb-1 text-slate-300">Telefone / WhatsApp</label>
+                            <input type="text" id="clientPhone" oninput="render()" placeholder="(00) 00000-0000" class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-700/80 bg-slate-900 text-white focus:ring-2 focus:ring-brand-blue outline-none transition-all">
                         </div>
                         <div class="sm:col-span-2">
-                            <label class="block text-[11px] font-bold mb-1 text-slate-700 dark:text-slate-300">Endereço Completo</label>
-                            <input type="text" id="clientAddress" oninput="render()" placeholder="Rua, Nº, Bairro, Cidade - UF" class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-700/60 focus:ring-2 focus:ring-brand-500 outline-none transition-all">
+                            <label class="block text-[11px] font-bold mb-1 text-slate-300">Endereço Completo</label>
+                            <input type="text" id="clientAddress" oninput="render()" placeholder="Rua, Nº, Bairro, Cidade - UF" class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-700/80 bg-slate-900 text-white focus:ring-2 focus:ring-brand-blue outline-none transition-all">
                         </div>
                     </div>
                 </div>
 
-                <hr class="border-slate-100 dark:border-slate-700/60">
+                <hr class="border-slate-800">
 
                 <!-- Services / Items List Manager -->
                 <div>
                     <div class="flex items-center justify-between mb-3">
-                        <h3 class="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2">
-                            <i class="fa-solid fa-list-check text-brand-600"></i> Objetos, Equipamentos & Serviços
+                        <h3 class="text-xs font-black uppercase tracking-wider text-slate-400 flex items-center gap-2">
+                            <i class="fa-solid fa-list-check text-brand-blueLight"></i> Objetos, Equipamentos & Serviços
                         </h3>
-                        <button onclick="addItem()" class="text-xs bg-brand-50 dark:bg-brand-900/30 hover:bg-brand-100 dark:hover:bg-brand-900/50 text-brand-700 dark:text-brand-300 font-extrabold px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 border border-brand-200 dark:border-brand-800/40">
+                        <button onclick="addItem()" class="text-xs bg-slate-900 hover:bg-slate-800 text-brand-yellow font-extrabold px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 border border-slate-800 shadow-sm">
                             <i class="fa-solid fa-plus"></i> Adicionar Item
                         </button>
                     </div>
@@ -249,38 +241,38 @@
                     </div>
 
                     <!-- Financial Summary & Discount Logic -->
-                    <div class="mt-4 p-4 bg-slate-50 dark:bg-slate-700/30 rounded-2xl border border-slate-200/80 dark:border-slate-600/60 space-y-3">
+                    <div class="mt-4 p-4 bg-slate-900/60 rounded-2xl border border-slate-800 space-y-3">
                         <div class="grid grid-cols-12 gap-3 items-center">
                             <div class="col-span-6 sm:col-span-4">
-                                <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1">Tipo Desconto</label>
-                                <select id="discountType" onchange="render()" class="w-full text-xs px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-800 outline-none">
+                                <label class="block text-[11px] font-bold text-slate-400 mb-1">Tipo Desconto</label>
+                                <select id="discountType" onchange="render()" class="w-full text-xs px-3 py-2 rounded-xl border border-slate-700 bg-slate-900 text-white outline-none">
                                     <option value="fixed">Fixo (R$)</option>
                                     <option value="percent">Porcentagem (%)</option>
                                 </select>
                             </div>
                             <div class="col-span-6 sm:col-span-4">
-                                <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1">Valor Desconto</label>
-                                <input type="number" id="discountValue" value="0" min="0" step="0.01" oninput="render()" class="w-full text-xs px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-800 outline-none">
+                                <label class="block text-[11px] font-bold text-slate-400 mb-1">Valor Desconto</label>
+                                <input type="number" id="discountValue" value="0" min="0" step="0.01" oninput="render()" class="w-full text-xs px-3 py-2 rounded-xl border border-slate-700 bg-slate-900 text-white outline-none">
                             </div>
-                            <div class="col-span-12 sm:col-span-4 text-right sm:border-l sm:border-slate-200 sm:dark:border-slate-600 sm:pl-3">
+                            <div class="col-span-12 sm:col-span-4 text-right sm:border-l sm:border-slate-800 sm:pl-3">
                                 <span class="block text-[10px] font-extrabold uppercase text-slate-400">Total com Impostos</span>
-                                <span id="grandTotalDisplay" class="text-xl font-black text-brand-600 dark:text-brand-400">R$ 0,00</span>
+                                <span id="grandTotalDisplay" class="text-xl font-black text-brand-yellow">R$ 0,00</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <hr class="border-slate-100 dark:border-slate-700/60">
+                <hr class="border-slate-800">
 
                 <!-- Legal Parameters & Custom Conditions -->
                 <div>
-                    <h3 class="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3 flex items-center gap-2">
-                        <i class="fa-solid fa-gavel text-brand-600"></i> Parâmetros Legais e Cláusulas
+                    <h3 class="text-xs font-black uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-gavel text-brand-blueLight"></i> Parâmetros Legais e Cláusulas
                     </h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-[11px] font-bold mb-1 text-slate-700 dark:text-slate-300">Garantia Técnica (CDC Art. 26)</label>
-                            <select id="warrantyTerm" onchange="render()" class="w-full text-xs px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-700/60 outline-none">
+                            <label class="block text-[11px] font-bold mb-1 text-slate-300">Garantia Técnica (CDC Art. 26)</label>
+                            <select id="warrantyTerm" onchange="render()" class="w-full text-xs px-3 py-2.5 rounded-xl border border-slate-700 bg-slate-900 text-white outline-none">
                                 <option value="90 dias (Garantia Legal CDC Art. 26 II)">90 Dias (Legal CDC Art. 26 - Bens Duráveis)</option>
                                 <option value="30 dias (Garantia Legal CDC Art. 26 I)">30 Dias (Legal CDC Art. 26 - Bens Não Duráveis)</option>
                                 <option value="180 dias (Garantia Estendida Especial)">180 Dias (Garantia Estendida)</option>
@@ -289,16 +281,16 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-[11px] font-bold mb-1 text-slate-700 dark:text-slate-300">Foro de Eleição (Comarca)</label>
-                            <input type="text" id="legalCity" oninput="render()" placeholder="Ex: Arcoverde - PE" class="w-full text-xs px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-700/60 outline-none">
+                            <label class="block text-[11px] font-bold mb-1 text-slate-300">Foro de Eleição (Comarca)</label>
+                            <input type="text" id="legalCity" oninput="render()" placeholder="Ex: Arcoverde - PE" class="w-full text-xs px-3 py-2.5 rounded-xl border border-slate-700 bg-slate-900 text-white outline-none">
                         </div>
                         <div>
-                            <label class="block text-[11px] font-bold mb-1 text-slate-700 dark:text-slate-300">Multa Rescisória / Atraso (%)</label>
-                            <input type="text" id="penaltyFee" oninput="render()" value="10%" class="w-full text-xs px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-700/60 outline-none">
+                            <label class="block text-[11px] font-bold mb-1 text-slate-300">Multa Rescisória / Atraso (%)</label>
+                            <input type="text" id="penaltyFee" oninput="render()" value="10%" class="w-full text-xs px-3 py-2.5 rounded-xl border border-slate-700 bg-slate-900 text-white outline-none">
                         </div>
                         <div>
-                            <label class="block text-[11px] font-bold mb-1 text-slate-700 dark:text-slate-300">Forma de Pagamento</label>
-                            <select id="paymentMethod" onchange="render()" class="w-full text-xs px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-700/60 outline-none">
+                            <label class="block text-[11px] font-bold mb-1 text-slate-300">Forma de Pagamento</label>
+                            <select id="paymentMethod" onchange="render()" class="w-full text-xs px-3 py-2.5 rounded-xl border border-slate-700 bg-slate-900 text-white outline-none">
                                 <option value="PIX">PIX à Vista</option>
                                 <option value="Boleto Bancário">Boleto Bancário</option>
                                 <option value="Cartão de Crédito">Cartão de Crédito</option>
@@ -307,41 +299,41 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-[11px] font-bold mb-1 text-slate-700 dark:text-slate-300">Taxa de Visita Técnica</label>
-                            <input type="text" id="techVisitFee" oninput="render()" placeholder="Ex: R$ 80,00 se não aprovado" class="w-full text-xs px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-700/60 outline-none">
+                            <label class="block text-[11px] font-bold mb-1 text-slate-300">Taxa de Visita Técnica</label>
+                            <input type="text" id="techVisitFee" oninput="render()" placeholder="Ex: R$ 80,00 se não aprovado" class="w-full text-xs px-3 py-2.5 rounded-xl border border-slate-700 bg-slate-900 text-white outline-none">
                         </div>
                         <div>
-                            <label class="block text-[11px] font-bold mb-1 text-slate-700 dark:text-slate-300">Data do Documento</label>
-                            <input type="date" id="docDate" onchange="render()" class="w-full text-xs px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-700/60 outline-none">
+                            <label class="block text-[11px] font-bold mb-1 text-slate-300">Data do Documento</label>
+                            <input type="date" id="docDate" onchange="render()" class="w-full text-xs px-3 py-2.5 rounded-xl border border-slate-700 bg-slate-900 text-white outline-none">
                         </div>
                         <div class="sm:col-span-2">
-                            <label class="block text-[11px] font-bold mb-1 text-slate-700 dark:text-slate-300">Observações Especiais / Cláusulas Adicionais</label>
-                            <textarea id="additionalNotes" oninput="render()" rows="3" placeholder="Insira ressalvas técnicas, observações de diagnóstico ou especificações..." class="w-full text-xs p-3 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-700/60 outline-none transition-all"></textarea>
+                            <label class="block text-[11px] font-bold mb-1 text-slate-300">Observações Especiais / Cláusulas Adicionais</label>
+                            <textarea id="additionalNotes" oninput="render()" rows="3" placeholder="Insira ressalvas técnicas, observações de diagnóstico ou especificações..." class="w-full text-xs p-3 rounded-xl border border-slate-700 bg-slate-900 text-white outline-none transition-all"></textarea>
                         </div>
                     </div>
                 </div>
 
-                <hr class="border-slate-100 dark:border-slate-700/60">
+                <hr class="border-slate-800">
 
                 <!-- Signature Pad & Legal Hash -->
                 <div>
                     <div class="flex items-center justify-between mb-2">
-                        <h3 class="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2">
-                            <i class="fa-solid fa-pen-nib text-brand-600"></i> Assinatura Digital Touch (Art. 10 MP 2.200-2/2001)
+                        <h3 class="text-xs font-black uppercase tracking-wider text-slate-400 flex items-center gap-2">
+                            <i class="fa-solid fa-pen-nib text-brand-blueLight"></i> Assinatura Digital Touch (Art. 10 MP 2.200-2/2001)
                         </h3>
-                        <button onclick="clearSignature()" class="text-[11px] text-rose-500 hover:text-rose-600 font-bold">Limpar Tela</button>
+                        <button onclick="clearSignature()" class="text-[11px] text-rose-400 hover:text-rose-300 font-bold">Limpar Tela</button>
                     </div>
-                    <div class="border-2 border-slate-200 dark:border-slate-600 rounded-2xl overflow-hidden bg-white shadow-inner">
+                    <div class="border-2 border-slate-700 rounded-2xl overflow-hidden bg-white shadow-inner">
                         <canvas id="sigCanvas" width="500" height="130" class="w-full h-28 touch-none cursor-crosshair"></canvas>
                     </div>
                     <div class="mt-2 text-[10px] text-slate-400 flex items-center justify-between font-mono">
-                        <span><i class="fa-solid fa-shield-halved text-emerald-500"></i> Hash & Timestamp integrados</span>
-                        <button onclick="refreshLegalHash()" class="text-brand-600 hover:underline">Regerar Hash</button>
+                        <span><i class="fa-solid fa-shield-halved text-emerald-400"></i> Hash & Timestamp integrados</span>
+                        <button onclick="refreshLegalHash()" class="text-brand-blueLight hover:underline">Regerar Hash</button>
                     </div>
                 </div>
 
                 <!-- Save Record Action -->
-                <button onclick="saveToHistory()" class="w-full py-3.5 bg-slate-900 hover:bg-black dark:bg-brand-600 dark:hover:bg-brand-700 text-white font-extrabold text-xs rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
+                <button onclick="saveToHistory()" class="w-full py-3.5 bg-brand-blue hover:bg-brand-blueHover text-white font-extrabold text-xs rounded-xl shadow-lg shadow-blue-600/30 transition-all flex items-center justify-center gap-2">
                     <i class="fa-solid fa-box-archive"></i>
                     <span>Salvar no Histórico Local de Documentos</span>
                 </button>
@@ -352,13 +344,13 @@
         <section class="lg:col-span-6 space-y-4">
             
             <!-- Quick Action Toolbar -->
-            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200/80 dark:border-slate-700/80 p-3 flex flex-wrap items-center justify-between gap-2 no-print">
+            <div class="bg-brand-cardBg border border-brand-cardBorder rounded-2xl shadow-xl p-3 flex flex-wrap items-center justify-between gap-2 no-print">
                 <div class="flex items-center gap-2">
                     <span class="text-[11px] font-black text-slate-400 uppercase px-1">Visualização A4</span>
-                    <div class="hidden sm:flex items-center gap-1 bg-slate-100 dark:bg-slate-700 rounded-lg p-1">
-                        <button onclick="zoomPreview(0.9)" class="px-2 py-0.5 text-xs text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-600 rounded"><i class="fa-solid fa-minus"></i></button>
-                        <span id="zoomLevel" class="text-[10px] font-bold text-slate-600 dark:text-slate-300 px-1">100%</span>
-                        <button onclick="zoomPreview(1.1)" class="px-2 py-0.5 text-xs text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-600 rounded"><i class="fa-solid fa-plus"></i></button>
+                    <div class="hidden sm:flex items-center gap-1 bg-slate-900 rounded-xl p-1 border border-slate-800">
+                        <button onclick="zoomPreview(0.9)" class="px-2 py-0.5 text-xs text-slate-300 hover:bg-slate-800 rounded-lg"><i class="fa-solid fa-minus"></i></button>
+                        <span id="zoomLevel" class="text-[10px] font-bold text-slate-300 px-1">100%</span>
+                        <button onclick="zoomPreview(1.1)" class="px-2 py-0.5 text-xs text-slate-300 hover:bg-slate-800 rounded-lg"><i class="fa-solid fa-plus"></i></button>
                     </div>
                 </div>
 
@@ -371,7 +363,7 @@
                         <i class="fa-solid fa-file-pdf"></i>
                         <span>Baixar PDF</span>
                     </button>
-                    <button onclick="window.print()" class="flex-1 sm:flex-initial px-3.5 py-2 text-xs font-bold bg-slate-800 hover:bg-slate-900 text-white rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-sm">
+                    <button onclick="window.print()" class="flex-1 sm:flex-initial px-3.5 py-2 text-xs font-bold bg-slate-800 hover:bg-slate-700 text-white rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-sm">
                         <i class="fa-solid fa-print"></i>
                         <span>Imprimir</span>
                     </button>
@@ -379,8 +371,8 @@
             </div>
 
             <!-- Dynamic Legal Guidance Banner -->
-            <div id="legalAdviceBanner" class="p-4 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 rounded-2xl text-[11px] text-amber-900 dark:text-amber-200 flex items-start gap-3 no-print shadow-sm">
-                <i class="fa-solid fa-scale-balanced text-amber-600 text-base mt-0.5 flex-shrink-0"></i>
+            <div id="legalAdviceBanner" class="p-4 bg-brand-cardBg border border-brand-cardBorder rounded-2xl text-[11px] text-slate-300 flex items-start gap-3 no-print shadow-xl">
+                <i class="fa-solid fa-scale-balanced text-brand-yellow text-base mt-0.5 flex-shrink-0"></i>
                 <div id="legalAdviceText" class="leading-relaxed">
                     <!-- Dynamic Legal Explanation Populated Here -->
                 </div>
@@ -399,61 +391,61 @@
     </main>
 
     <!-- Issuer / Business Owner Modal -->
-    <div id="issuerModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
-        <div class="bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-700 max-w-lg w-full p-6 space-y-4">
-            <div class="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-700">
+    <div id="issuerModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
+        <div class="bg-brand-cardBg border border-brand-cardBorder text-slate-100 rounded-3xl shadow-2xl max-w-lg w-full p-6 space-y-4">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-800">
                 <h3 class="text-sm font-bold flex items-center gap-2">
-                    <i class="fa-solid fa-building-user text-brand-600"></i> Cadastrar Dados do Prestador / Emitente
+                    <i class="fa-solid fa-building-user text-brand-blueLight"></i> Cadastrar Dados do Prestador / Emitente
                 </h3>
-                <button onclick="closeIssuerModal()" class="text-slate-400 hover:text-slate-600 p-1">
+                <button onclick="closeIssuerModal()" class="text-slate-400 hover:text-white p-1">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
             
             <div class="space-y-3">
                 <div>
-                    <label class="block text-xs font-semibold mb-1">Razão Social ou Nome do Profissional</label>
-                    <input type="text" id="issuerName" class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-700 outline-none">
+                    <label class="block text-xs font-semibold mb-1 text-slate-300">Razão Social ou Nome do Profissional</label>
+                    <input type="text" id="issuerName" class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-700 bg-slate-900 text-white outline-none">
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-semibold mb-1">CPF ou CNPJ</label>
-                        <input type="text" id="issuerDoc" class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-700 outline-none">
+                        <label class="block text-xs font-semibold mb-1 text-slate-300">CPF ou CNPJ</label>
+                        <input type="text" id="issuerDoc" class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-700 bg-slate-900 text-white outline-none">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold mb-1">Telefone / WhatsApp</label>
-                        <input type="text" id="issuerPhone" class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-700 outline-none">
+                        <label class="block text-xs font-semibold mb-1 text-slate-300">Telefone / WhatsApp</label>
+                        <input type="text" id="issuerPhone" class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-700 bg-slate-900 text-white outline-none">
                     </div>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold mb-1">E-mail de Contato / DPO (LGPD)</label>
-                    <input type="email" id="issuerEmail" class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-700 outline-none">
+                    <label class="block text-xs font-semibold mb-1 text-slate-300">E-mail de Contato / DPO (LGPD)</label>
+                    <input type="email" id="issuerEmail" class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-700 bg-slate-900 text-white outline-none">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold mb-1">Endereço Comercial Completo</label>
-                    <input type="text" id="issuerAddress" class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-700 outline-none">
+                    <label class="block text-xs font-semibold mb-1 text-slate-300">Endereço Comercial Completo</label>
+                    <input type="text" id="issuerAddress" class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-700 bg-slate-900 text-white outline-none">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold mb-1">Chave PIX Oficial para Recebimentos</label>
-                    <input type="text" id="issuerPix" class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-700 outline-none">
+                    <label class="block text-xs font-semibold mb-1 text-slate-300">Chave PIX Oficial para Recebimentos</label>
+                    <input type="text" id="issuerPix" class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-700 bg-slate-900 text-white outline-none">
                 </div>
             </div>
 
-            <div class="flex items-center justify-end space-x-2 pt-3 border-t border-slate-100 dark:border-slate-700">
-                <button onclick="closeIssuerModal()" class="px-4 py-2 text-xs font-semibold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl">Cancelar</button>
-                <button onclick="saveIssuerData()" class="px-4 py-2 text-xs font-bold bg-brand-600 hover:bg-brand-700 text-white rounded-xl shadow-sm">Salvar Dados</button>
+            <div class="flex items-center justify-end space-x-2 pt-3 border-t border-slate-800">
+                <button onclick="closeIssuerModal()" class="px-4 py-2 text-xs font-semibold text-slate-400 hover:bg-slate-800 rounded-xl">Cancelar</button>
+                <button onclick="saveIssuerData()" class="px-4 py-2 text-xs font-bold bg-brand-blue hover:bg-brand-blueHover text-white rounded-xl shadow-lg">Salvar Dados</button>
             </div>
         </div>
     </div>
 
     <!-- History Manager Modal -->
-    <div id="historyModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
-        <div class="bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-700 max-w-lg w-full p-6 space-y-4 max-h-[85vh] flex flex-col">
-            <div class="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-700">
+    <div id="historyModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
+        <div class="bg-brand-cardBg border border-brand-cardBorder text-slate-100 rounded-3xl shadow-2xl max-w-lg w-full p-6 space-y-4 max-h-[85vh] flex flex-col">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-800">
                 <h3 class="text-sm font-bold flex items-center gap-2">
-                    <i class="fa-solid fa-clock-rotate-left text-brand-600"></i> Histórico Local de Documentos
+                    <i class="fa-solid fa-clock-rotate-left text-brand-blueLight"></i> Histórico Local de Documentos
                 </h3>
-                <button onclick="closeHistoryModal()" class="text-slate-400 hover:text-slate-600 p-1">
+                <button onclick="closeHistoryModal()" class="text-slate-400 hover:text-white p-1">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
@@ -462,15 +454,15 @@
                 <!-- Items populated via JS -->
             </div>
 
-            <div class="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-700">
-                <button onclick="clearHistory()" class="text-xs text-rose-500 hover:underline">Limpar Todo Histórico</button>
-                <button onclick="closeHistoryModal()" class="px-4 py-2 text-xs font-bold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl">Fechar</button>
+            <div class="flex items-center justify-between pt-3 border-t border-slate-800">
+                <button onclick="clearHistory()" class="text-xs text-rose-400 hover:underline">Limpar Todo Histórico</button>
+                <button onclick="closeHistoryModal()" class="px-4 py-2 text-xs font-bold bg-slate-800 text-slate-200 rounded-xl">Fechar</button>
             </div>
         </div>
     </div>
 
     <!-- Notification Toast -->
-    <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl z-50 text-xs font-semibold flex items-center gap-2.5 transform translate-y-20 opacity-0 transition-all duration-300 no-print border border-slate-800">
+    <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl z-50 text-xs font-semibold flex items-center gap-2.5 transform translate-y-20 opacity-0 transition-all duration-300 no-print border border-slate-700">
         <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-base"></i>
         <span id="toastMessage">Operação concluída!</span>
     </div>
@@ -515,12 +507,6 @@
             render();
         };
 
-        function toggleDarkMode() {
-            document.documentElement.classList.toggle('dark');
-            const icon = document.getElementById('themeIcon');
-            icon.className = document.documentElement.classList.contains('dark') ? 'fa-solid fa-sun text-amber-400 text-sm' : 'fa-solid fa-moon text-sm';
-        }
-
         function zoomPreview(factor) {
             if (factor === 1.0) currentZoom = 1.0;
             else currentZoom = Math.min(Math.max(0.6, currentZoom * factor), 1.4);
@@ -542,7 +528,7 @@
                 btn.innerHTML = `
                     <div class="flex items-center justify-between w-full">
                         <i class="fa-solid ${t.icon} text-sm"></i>
-                        <span class="text-[9px] font-black uppercase px-1.5 py-0.5 rounded-md bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400">${t.badge}</span>
+                        <span class="text-[9px] font-black uppercase px-1.5 py-0.5 rounded-md bg-slate-900 text-slate-400 border border-slate-800">${t.badge}</span>
                     </div>
                     <span class="text-[11px] font-bold tracking-tight line-clamp-1">${t.title}</span>
                 `;
@@ -562,9 +548,9 @@
                 const btn = document.getElementById(`tab-${t.id}`);
                 if (!btn) return;
                 if (t.id === currentDocType) {
-                    btn.className = 'p-2.5 rounded-xl border border-brand-500 bg-brand-50/70 dark:bg-brand-900/40 text-brand-700 dark:text-brand-300 shadow-sm text-left flex flex-col justify-between h-16';
+                    btn.className = 'p-2.5 rounded-xl border border-brand-blue bg-blue-600/20 text-white shadow-lg text-left flex flex-col justify-between h-16';
                 } else {
-                    btn.className = 'p-2.5 rounded-xl border border-slate-200/80 dark:border-slate-700/80 hover:bg-slate-50 dark:hover:bg-slate-700/40 text-slate-700 dark:text-slate-300 text-left flex flex-col justify-between h-16';
+                    btn.className = 'p-2.5 rounded-xl border border-slate-800 bg-slate-900/60 hover:bg-slate-800/80 text-slate-300 text-left flex flex-col justify-between h-16';
                 }
             });
 
@@ -604,19 +590,19 @@
 
             items.forEach((item, index) => {
                 const row = document.createElement('div');
-                row.className = 'grid grid-cols-12 gap-2 items-center bg-slate-50 dark:bg-slate-700/30 p-2.5 rounded-xl border border-slate-200/70 dark:border-slate-600/60';
+                row.className = 'grid grid-cols-12 gap-2 items-center bg-slate-900/60 p-2.5 rounded-xl border border-slate-800';
                 row.innerHTML = `
                     <div class="col-span-12 sm:col-span-6">
-                        <input type="text" value="${item.description}" oninput="updateItem(${index}, 'description', this.value)" placeholder="Descrição do Serviço ou Equipamento" class="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 outline-none">
+                        <input type="text" value="${item.description}" oninput="updateItem(${index}, 'description', this.value)" placeholder="Descrição do Serviço ou Equipamento" class="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-900 text-white outline-none">
                     </div>
                     <div class="col-span-4 sm:col-span-2">
-                        <input type="number" min="1" value="${item.qty}" oninput="updateItem(${index}, 'qty', this.value)" placeholder="Qtd" class="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 outline-none">
+                        <input type="number" min="1" value="${item.qty}" oninput="updateItem(${index}, 'qty', this.value)" placeholder="Qtd" class="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-900 text-white outline-none">
                     </div>
                     <div class="col-span-6 sm:col-span-3">
-                        <input type="number" step="0.01" min="0" value="${item.unitPrice}" oninput="updateItem(${index}, 'unitPrice', this.value)" placeholder="Valor (R$)" class="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 outline-none">
+                        <input type="number" step="0.01" min="0" value="${item.unitPrice}" oninput="updateItem(${index}, 'unitPrice', this.value)" placeholder="Valor (R$)" class="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-900 text-white outline-none">
                     </div>
                     <div class="col-span-2 sm:col-span-1 text-center">
-                        <button onclick="removeItem(${index})" class="text-slate-400 hover:text-rose-500 p-1"><i class="fa-solid fa-trash-can"></i></button>
+                        <button onclick="removeItem(${index})" class="text-slate-400 hover:text-rose-400 p-1"><i class="fa-solid fa-trash-can"></i></button>
                     </div>
                 `;
                 container.appendChild(row);
@@ -821,7 +807,7 @@
                             <p class="text-[10px] text-slate-600">${issuerData.doc ? 'CPF/CNPJ: ' + issuerData.doc : 'Cadastre seus dados em "Meus Dados"'}</p>
                             <p class="text-[10px] text-slate-600">${issuerData.phone ? 'Tel: ' + issuerData.phone : ''} ${issuerData.email ? '| ' + issuerData.email : ''}</p>
                             <p class="text-[10px] text-slate-600">${issuerData.address || ''}</p>
-                            ${issuerData.pix ? `<p class="text-[10px] font-bold text-brand-700">Chave PIX: ${issuerData.pix}</p>` : ''}
+                            ${issuerData.pix ? `<p class="text-[10px] font-bold text-blue-700">Chave PIX: ${issuerData.pix}</p>` : ''}
                         </div>
                         <div class="text-right">
                             <span class="inline-block px-2.5 py-1 bg-slate-900 text-white font-black text-[10px] rounded uppercase">${titles[currentDocType]}</span>
@@ -905,7 +891,7 @@
                             ` : ''}
                             <tr>
                                 <td colspan="3" class="py-1.5 px-2.5 text-right uppercase text-slate-900">Total Final:</td>
-                                <td class="py-1.5 px-2.5 text-right text-brand-700 text-xs font-black">${formatCurrency(grandTotal)}</td>
+                                <td class="py-1.5 px-2.5 text-right text-blue-700 text-xs font-black">${formatCurrency(grandTotal)}</td>
                             </tr>
                         </tfoot>
                     </table>
@@ -977,7 +963,6 @@
             const element = document.getElementById('a4Document');
             const clientName = document.getElementById('clientName').value || 'Cliente';
             
-            // Reset scale during print generation
             const wrapper = document.getElementById('previewScaleWrapper');
             const prevTransform = wrapper.style.transform;
             wrapper.style.transform = 'scale(1)';
@@ -1062,15 +1047,15 @@
             } else {
                 history.forEach(item => {
                     const el = document.createElement('div');
-                    el.className = 'p-3 bg-slate-50 dark:bg-slate-700/50 border border-slate-200/80 dark:border-slate-600/60 rounded-xl flex items-center justify-between text-xs';
+                    el.className = 'p-3 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-between text-xs';
                     el.innerHTML = `
                         <div>
-                            <span class="font-bold block">${item.client}</span>
+                            <span class="font-bold block text-white">${item.client}</span>
                             <span class="text-[10px] text-slate-400 uppercase">${item.type.replace('_', ' ')} • ${item.date}</span>
                         </div>
                         <div class="text-right">
-                            <span class="font-black text-brand-600 block">${formatCurrency(item.total)}</span>
-                            <button onclick="loadFromHistory(${item.id})" class="text-[10px] text-slate-500 underline hover:text-brand-600">Restaurar</button>
+                            <span class="font-black text-brand-yellow block">${formatCurrency(item.total)}</span>
+                            <button onclick="loadFromHistory(${item.id})" class="text-[10px] text-brand-blueLight underline hover:text-white">Restaurar</button>
                         </div>
                     `;
                     container.appendChild(el);
