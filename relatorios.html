@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="h-full">
+<html lang="pt-BR" class="h-full dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,17 +8,20 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
                         brand: {
-                            blue: '#0A2540',     /* Azul Marítimo Principal */
-                            blueDark: '#04101A',
-                            blueLight: '#1D4ED8',/* Azul Marítimo Destaque */
-                            yellow: '#FFB900',   /* Amarelo Secundário */
-                            yellowHover: '#E0A100',
-                            white: '#FFFFFF',
-                            light: '#F4F7F9'
+                            darkBg: '#030712',      /* Fundo ultra escuro da landing/dashboard */
+                            cardBg: '#0b0f19',      /* Fundo dos cards escuros */
+                            cardBorder: '#1f293d',  /* Bordas elegantes dos cards */
+                            blue: '#2563eb',        /* Azul Primário */
+                            blueHover: '#1d4ed8',
+                            blueLight: '#3b82f6',   /* Azul Neon / Destaque */
+                            yellow: '#f59e0b',      /* Amarelo / Dourado Neon */
+                            yellowHover: '#d97706',
+                            textMuted: '#94a3b8'    /* Texto secundário */
                         }
                     }
                 }
@@ -30,19 +33,45 @@
     <!-- FontAwesome para Ícones -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Favicon SVG Transparente Embutido -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 38' fill='none'><rect x='1' y='1' width='28' height='36' rx='4' stroke='%230D6EFD' stroke-width='2.5' fill='none'/><path d='M21 1V9H29' stroke='%230D6EFD' stroke-width='2.5'/><path d='M15 12V26M9 17H21M9 17L6 23H12L9 17ZM21 17L18 23H24L21 17ZM12 27H18' stroke='white' stroke-width='2' stroke-linecap='round'/><path d='M20 27L24 31L32 21' stroke='%23FFB900' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 38' fill='none'><rect x='1' y='1' width='28' height='36' rx='4' stroke='%233b82f6' stroke-width='2.5' fill='none'/><path d='M21 1V9H29' stroke='%233b82f6' stroke-width='2.5'/><path d='M15 12V26M9 17H21M9 17L6 23H12L9 17ZM21 17L18 23H24L21 17ZM12 27H18' stroke='white' stroke-width='2' stroke-linecap='round'/><path d='M20 27L24 31L32 21' stroke='%23f59e0b' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'/></svg>">
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <style>
+        body {
+            background-color: #030712;
+            color: #f8fafc;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        /* Estilização para o Documento Impresso (Mão única em Folha Branca) */
         @media print {
             .no-print { display: none !important; }
             body { background-color: white !important; color: black !important; }
-            .print-shadow { box-shadow: none !important; border: 1px solid #cbd5e1 !important; }
+            .print-document { background-color: white !important; color: black !important; border: none !important; box-shadow: none !important; }
+            .print-text-dark { color: #0f172a !important; }
+            .print-border { border-color: #cbd5e1 !important; }
+            .print-bg-light { background-color: #f8fafc !important; }
+        }
+
+        /* Scrollbar Personalizada Dark */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #030712;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #334155;
         }
     </style>
 </head>
-<body class="bg-brand-light text-slate-800 h-full flex flex-col font-sans">
+<body class="bg-brand-darkBg text-slate-100 h-full flex flex-col font-sans antialiased">
 
     <!-- Script de Proteção de Rota -->
     <script>
@@ -69,37 +98,32 @@
         }
     </script>
 
-    <!-- CABEÇALHO DA EMPRESA -->
-    <header class="bg-brand-blue text-white shadow-md no-print">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
-            <div class="flex items-center gap-3">
-                <button onclick="voltarAoMenu()" class="p-2 text-slate-300 hover:text-white hover:bg-brand-blueDark rounded-xl transition-colors" title="Voltar ao Menu Principal">
+    <!-- CABEÇALHO DARK ESTILO LANDING PAGE DOCKMAKER -->
+    <header class="bg-brand-cardBg/90 backdrop-blur-md border-b border-brand-cardBorder sticky top-0 z-40 no-print">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-4">
+                <button onclick="voltarAoMenu()" class="p-2 text-slate-400 hover:text-white hover:bg-slate-800/60 rounded-xl transition-colors border border-slate-700/50" title="Voltar ao Menu Principal">
                     <i class="fa-solid fa-arrow-left text-lg"></i>
                 </button>
-                <div class="bg-brand-yellow text-brand-blue p-3 rounded-lg shadow font-bold text-xl">
-                    <i class="fa-solid fa-gauge-high"></i>
-                </div>
-                <div>
-                    <!-- CÓDIGO DO LOGOTIPO SVG PROFISSIONAL -->
-                    <a href="index.html" class="d-inline-flex align-items-center text-decoration-none">
-                        <svg width="220" height="42" viewBox="0 0 220 42" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="2" y="2" width="28" height="36" rx="4" stroke="#e0effe" stroke-width="2.2" fill="none"/>
-                            <path d="M22 2V10H30" stroke="#3b82f6" stroke-width="2.2" stroke-linejoin="round"/>
-                            <path d="M16 13V27M10 18H22M10 18L7 24H13L10 18ZM22 18L19 24H25L22 18ZM13 28H19" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
-                            <path d="M22 28L26 32L34 22" stroke="#FFB900" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                            <text x="44" y="27" font-family="'Segoe UI', Roboto, sans-serif" font-weight="800" font-size="20" fill="white">DockMaker</text>
-                            <text x="160" y="27" font-family="'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="20" fill="#3b82f6">PRO</text>
-                            <line x1="160" y1="31" x2="202" y2="31" stroke="#FFB900" stroke-width="2.5" stroke-linecap="round"/>
-                        </svg>
-                    </a>
-                    <p class="text-xs text-brand-yellow font-semibold uppercase tracking-wider">Sistema Personalizado de Desempenho e Relatórios</p>
-                </div>
+                
+                <!-- LOGOTIPO SVG DOCKMAKER PRO -->
+                <a href="index.html" class="inline-flex items-center">
+                    <svg width="200" height="38" viewBox="0 0 220 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="2" y="2" width="28" height="36" rx="4" stroke="#3b82f6" stroke-width="2.2" fill="none"/>
+                        <path d="M22 2V10H30" stroke="#3b82f6" stroke-width="2.2" stroke-linejoin="round"/>
+                        <path d="M16 13V27M10 18H22M10 18L7 24H13L10 18ZM22 18L19 24H25L22 18ZM13 28H19" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+                        <path d="M22 28L26 32L34 22" stroke="#f59e0b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        <text x="44" y="27" font-family="'Segoe UI', Roboto, sans-serif" font-weight="800" font-size="20" fill="white">DockMaker</text>
+                        <text x="160" y="27" font-family="'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="20" fill="#3b82f6">PRO</text>
+                        <line x1="160" y1="31" x2="202" y2="31" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round"/>
+                    </svg>
+                </a>
             </div>
-            
+
             <!-- SELETOR DE MÊS / PERÍODO DE REFERÊNCIA -->
-            <div class="flex items-center gap-3 bg-brand-blueDark px-4 py-2 rounded-lg border border-brand-yellow/30">
-                <span class="text-xs text-slate-300">Período de Referência:</span>
-                <select id="select-mes-referencia" onchange="mudarPeriodoReferencia()" class="bg-brand-blue text-brand-yellow font-bold text-sm rounded px-2 py-1 outline-none border border-brand-yellow/40">
+            <div class="flex items-center gap-3 bg-slate-900/80 px-4 py-2 rounded-xl border border-brand-cardBorder shadow-inner">
+                <span class="text-xs font-medium text-slate-400">Período de Referência:</span>
+                <select id="select-mes-referencia" onchange="mudarPeriodoReferencia()" class="bg-slate-800 text-brand-yellow font-bold text-xs md:text-sm rounded-lg px-3 py-1 outline-none border border-slate-700 focus:border-brand-blue">
                     <option value="todos">📊 Visão Geral (Todo o Tempo)</option>
                     <option value="2026-09">Setembro / 2026</option>
                     <option value="2026-10" selected>Outubro / 2026</option>
@@ -110,20 +134,20 @@
         </div>
     </header>
 
-    <!-- NAVEGAÇÃO DE ABAS -->
-    <nav class="bg-brand-blueDark text-white shadow-inner no-print border-t border-brand-blue/50">
-        <div class="max-w-7xl mx-auto px-4 flex overflow-x-auto gap-2 py-2">
-            <button onclick="switchTab('dashboard')" id="btn-tab-dashboard" class="px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 bg-brand-yellow text-brand-blue shadow transition">
+    <!-- NAVEGAÇÃO DE ABAS DARK -->
+    <nav class="bg-brand-darkBg/95 backdrop-blur-md border-b border-brand-cardBorder/60 no-print">
+        <div class="max-w-7xl mx-auto px-4 flex overflow-x-auto gap-2 py-2.5 scrollbar-none">
+            <button onclick="switchTab('dashboard')" id="btn-tab-dashboard" class="px-4 py-2 rounded-xl font-medium text-xs md:text-sm flex items-center gap-2 bg-brand-blue text-white shadow-lg shadow-blue-600/30 transition-all">
                 <i class="fa-solid fa-chart-pie"></i> Dashboard Geral
             </button>
-            <button onclick="switchTab('avaliacoes')" id="btn-tab-avaliacoes" class="px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 bg-brand-blue/50 text-white hover:bg-brand-blue transition">
+            <button onclick="switchTab('avaliacoes')" id="btn-tab-avaliacoes" class="px-4 py-2 rounded-xl font-medium text-xs md:text-sm flex items-center gap-2 bg-slate-900/80 text-slate-400 hover:text-white hover:bg-slate-800 border border-slate-800 transition-all">
                 <i class="fa-solid fa-users-gear"></i> Gestão & Notas da Equipe
             </button>
-            <button onclick="switchTab('relatorio-completo')" id="btn-tab-relatorio-completo" class="px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 bg-brand-blue/50 text-white hover:bg-brand-blue transition">
-                <i class="fa-solid fa-file-lines"></i> Relatório Completo (Operacional)
+            <button onclick="switchTab('relatorio-completo')" id="btn-tab-relatorio-completo" class="px-4 py-2 rounded-xl font-medium text-xs md:text-sm flex items-center gap-2 bg-slate-900/80 text-slate-400 hover:text-white hover:bg-slate-800 border border-slate-800 transition-all">
+                <i class="fa-solid fa-file-lines"></i> Relatório Operacional
             </button>
-            <button onclick="switchTab('relatorio-adm')" id="btn-tab-relatorio-adm" class="px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 bg-brand-blue/50 text-white hover:bg-brand-blue transition">
-                <i class="fa-solid fa-file-invoice-dollar"></i> Relatório Otimizado (Administrativo)
+            <button onclick="switchTab('relatorio-adm')" id="btn-tab-relatorio-adm" class="px-4 py-2 rounded-xl font-medium text-xs md:text-sm flex items-center gap-2 bg-slate-900/80 text-slate-400 hover:text-white hover:bg-slate-800 border border-slate-800 transition-all">
+                <i class="fa-solid fa-file-invoice-dollar"></i> Relatório Administrativo
             </button>
         </div>
     </nav>
@@ -131,147 +155,152 @@
     <!-- CONTEÚDO PRINCIPAL -->
     <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 overflow-y-auto">
 
-        <!-- CONFIGURAÇÃO DA EMPRESA E ASSINATURAS (NOVO PAINEL) -->
-        <section class="bg-white p-5 rounded-xl shadow mb-6 no-print border border-slate-200">
-            <div class="flex items-center justify-between mb-3 border-b pb-2 cursor-pointer" onclick="toggleConfigEmpresa()">
-                <h3 class="font-bold text-brand-blue text-sm flex items-center gap-2">
-                    <i class="fa-solid fa-building text-brand-yellow"></i> Dados da Empresa & Assinantes dos Relatórios
+        <!-- CONFIGURAÇÃO DA EMPRESA E ASSINATURAS (CARD DARK) -->
+        <section class="bg-brand-cardBg border border-brand-cardBorder rounded-2xl p-5 mb-6 no-print shadow-xl">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3 cursor-pointer" onclick="toggleConfigEmpresa()">
+                <h3 class="font-bold text-white text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-building text-brand-blueLight"></i> Personalização da Empresa & Signatários dos Relatórios
                 </h3>
-                <span class="text-xs text-brand-blueLight font-semibold" id="btn-toggle-config"><i class="fa-solid fa-chevron-down mr-1"></i> Editar Informações</span>
+                <span class="text-xs text-brand-yellow font-semibold hover:underline" id="btn-toggle-config"><i class="fa-solid fa-chevron-down mr-1"></i> Editar Informações</span>
             </div>
             
-            <div id="painel-config-empresa" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
+            <div id="painel-config-empresa" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-4">
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1">Nome da Empresa / Organização:</label>
-                    <input type="text" id="cfg-nome-empresa" oninput="salvarConfigEmpresa()" placeholder="Ex: Minha Empresa Ltda" class="w-full bg-brand-light border border-slate-300 rounded px-3 py-1.5 text-xs font-bold text-brand-blue focus:ring-2 focus:ring-brand-blue outline-none">
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Nome da Empresa / Organização:</label>
+                    <input type="text" id="cfg-nome-empresa" oninput="salvarConfigEmpresa()" placeholder="Ex: Minha Empresa Ltda" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-lg px-3 py-2 text-xs font-bold text-white focus:ring-2 focus:ring-brand-blue outline-none">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1">Subtítulo / Descrição do Relatório:</label>
-                    <input type="text" id="cfg-subtitulo-empresa" oninput="salvarConfigEmpresa()" placeholder="Ex: Avaliação de Desempenho e Metas" class="w-full bg-brand-light border border-slate-300 rounded px-3 py-1.5 text-xs font-bold text-brand-blue focus:ring-2 focus:ring-brand-blue outline-none">
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Subtítulo / Descrição do Relatório:</label>
+                    <input type="text" id="cfg-subtitulo-empresa" oninput="salvarConfigEmpresa()" placeholder="Ex: Avaliação de Desempenho e Metas" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-lg px-3 py-2 text-xs font-bold text-white focus:ring-2 focus:ring-brand-blue outline-none">
                 </div>
 
                 <!-- Assinatura 1 -->
-                <div class="p-3 bg-brand-light rounded border border-slate-200 space-y-2">
-                    <p class="text-xs font-bold text-brand-blue"><i class="fa-solid fa-file-signature mr-1"></i> Signatário 1 (Esquerda)</p>
-                    <input type="text" id="cfg-ass1-nome" oninput="salvarConfigEmpresa()" placeholder="Nome (Ex: João Silva)" class="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs">
-                    <input type="text" id="cfg-ass1-setor" oninput="salvarConfigEmpresa()" placeholder="Setor/Cargo (Ex: Supervisor de Produção)" class="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs">
-                    <input type="text" id="cfg-ass1-titulo" oninput="salvarConfigEmpresa()" placeholder="Rótulo da Linha (Ex: Assinatura do Responsável)" class="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs">
+                <div class="p-3 bg-slate-950/60 rounded-xl border border-slate-800 space-y-2">
+                    <p class="text-xs font-bold text-brand-blueLight"><i class="fa-solid fa-file-signature mr-1"></i> Signatário 1 (Esquerda)</p>
+                    <input type="text" id="cfg-ass1-nome" oninput="salvarConfigEmpresa()" placeholder="Nome (Ex: João Silva)" class="w-full bg-slate-900 border border-slate-800 rounded px-2.5 py-1 text-xs text-slate-200">
+                    <input type="text" id="cfg-ass1-setor" oninput="salvarConfigEmpresa()" placeholder="Setor/Cargo (Ex: Supervisor de Produção)" class="w-full bg-slate-900 border border-slate-800 rounded px-2.5 py-1 text-xs text-slate-200">
+                    <input type="text" id="cfg-ass1-titulo" oninput="salvarConfigEmpresa()" placeholder="Rótulo da Linha (Ex: Assinatura do Responsável)" class="w-full bg-slate-900 border border-slate-800 rounded px-2.5 py-1 text-xs text-slate-200">
                 </div>
 
                 <!-- Assinatura 2 -->
-                <div class="p-3 bg-brand-light rounded border border-slate-200 space-y-2">
-                    <p class="text-xs font-bold text-brand-blue"><i class="fa-solid fa-file-signature mr-1"></i> Signatário 2 (Direita)</p>
-                    <input type="text" id="cfg-ass2-nome" oninput="salvarConfigEmpresa()" placeholder="Nome (Ex: Maria Souza)" class="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs">
-                    <input type="text" id="cfg-ass2-setor" oninput="salvarConfigEmpresa()" placeholder="Setor/Cargo (Ex: Gerência de RH / Financeiro)" class="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs">
-                    <input type="text" id="cfg-ass2-titulo" oninput="salvarConfigEmpresa()" placeholder="Rótulo da Linha (Ex: Visto Conferido)" class="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs">
+                <div class="p-3 bg-slate-950/60 rounded-xl border border-slate-800 space-y-2">
+                    <p class="text-xs font-bold text-brand-blueLight"><i class="fa-solid fa-file-signature mr-1"></i> Signatário 2 (Direita)</p>
+                    <input type="text" id="cfg-ass2-nome" oninput="salvarConfigEmpresa()" placeholder="Nome (Ex: Maria Souza)" class="w-full bg-slate-900 border border-slate-800 rounded px-2.5 py-1 text-xs text-slate-200">
+                    <input type="text" id="cfg-ass2-setor" oninput="salvarConfigEmpresa()" placeholder="Setor/Cargo (Ex: Gerência de RH / Financeiro)" class="w-full bg-slate-900 border border-slate-800 rounded px-2.5 py-1 text-xs text-slate-200">
+                    <input type="text" id="cfg-ass2-titulo" oninput="salvarConfigEmpresa()" placeholder="Rótulo da Linha (Ex: Visto Conferido)" class="w-full bg-slate-900 border border-slate-800 rounded px-2.5 py-1 text-xs text-slate-200">
                 </div>
             </div>
         </section>
 
-        <!-- ABA 1: DASHBOARD -->
+        <!-- ABA 1: DASHBOARD GERAL -->
         <section id="tab-dashboard" class="space-y-6">
-            <!-- Cards Resumo -->
+            <!-- CARDS DE METRICAS (ESTILO LANDING PAGE) -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="bg-white p-5 rounded-xl shadow border-l-4 border-brand-yellow">
-                    <p class="text-xs font-bold text-slate-400 uppercase">Total de Colaboradores</p>
-                    <h3 class="text-3xl font-black text-brand-blue mt-1" id="dash-total-func">0</h3>
-                    <span class="text-xs text-emerald-600 font-semibold flex items-center gap-1 mt-2"><i class="fa-solid fa-circle-check"></i> Equipe Cadastrada</span>
+                <div class="bg-brand-cardBg border border-brand-cardBorder p-5 rounded-2xl shadow-lg relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-blue-600/10 rounded-full blur-xl"></div>
+                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Colaboradores</p>
+                    <h3 class="text-3xl font-extrabold text-white mt-2" id="dash-total-func">0</h3>
+                    <span class="text-xs text-emerald-400 font-medium flex items-center gap-1 mt-2"><i class="fa-solid fa-circle-check"></i> Equipe Ativa Cadastrada</span>
                 </div>
-                <div class="bg-white p-5 rounded-xl shadow border-l-4 border-brand-blueLight">
-                    <p class="text-xs font-bold text-slate-400 uppercase">Média Geral da Produção</p>
-                    <h3 class="text-3xl font-black text-brand-blue mt-1" id="dash-media-nota">0.00</h3>
-                    <span class="text-xs text-brand-blueLight font-semibold flex items-center gap-1 mt-2"><i class="fa-solid fa-star text-brand-yellow"></i> Nota Máxima 10.0</span>
+
+                <div class="bg-brand-cardBg border border-brand-cardBorder p-5 rounded-2xl shadow-lg relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-amber-500/10 rounded-full blur-xl"></div>
+                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Média de Desempenho</p>
+                    <h3 class="text-3xl font-extrabold text-brand-yellow mt-2" id="dash-media-nota">0.00</h3>
+                    <span class="text-xs text-slate-400 font-medium flex items-center gap-1 mt-2"><i class="fa-solid fa-star text-brand-yellow"></i> Nota Máxima 10.0</span>
                 </div>
-                <div class="bg-white p-5 rounded-xl shadow border-l-4 border-emerald-500">
-                    <p class="text-xs font-bold text-slate-400 uppercase">Rateio Total Distribuído</p>
-                    <h3 class="text-3xl font-black text-brand-blue mt-1" id="dash-total-rateio">R$ 0,00</h3>
-                    <span class="text-xs text-slate-500 font-semibold flex items-center gap-1 mt-2"><i class="fa-solid fa-wallet"></i> Valor Base Definido</span>
+
+                <div class="bg-brand-cardBg border border-brand-cardBorder p-5 rounded-2xl shadow-lg relative overflow-hidden">
+                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Rateio Total Distribuído</p>
+                    <h3 class="text-3xl font-extrabold text-white mt-2" id="dash-total-rateio">R$ 0,00</h3>
+                    <span class="text-xs text-slate-400 font-medium flex items-center gap-1 mt-2"><i class="fa-solid fa-wallet text-brand-blueLight"></i> Teto Múltiplo Definido</span>
                 </div>
-                <div class="bg-white p-5 rounded-xl shadow border-l-4 border-brand-yellow">
-                    <p class="text-xs font-bold text-slate-400 uppercase">Total a Pagar Ajustado</p>
-                    <h3 class="text-3xl font-black text-emerald-700 mt-1" id="dash-total-pagar">R$ 0,00</h3>
-                    <span class="text-xs text-slate-500 font-semibold flex items-center gap-1 mt-2"><i class="fa-solid fa-calculator"></i> Conforme Metas</span>
+
+                <div class="bg-brand-cardBg border border-brand-cardBorder p-5 rounded-2xl shadow-lg relative overflow-hidden">
+                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total a Pagar Ajustado</p>
+                    <h3 class="text-3xl font-extrabold text-emerald-400 mt-2" id="dash-total-pagar">R$ 0,00</h3>
+                    <span class="text-xs text-emerald-500/80 font-medium flex items-center gap-1 mt-2"><i class="fa-solid fa-calculator"></i> Calculado via Metas</span>
                 </div>
             </div>
 
-            <!-- Gráficos e Ações Rápidas -->
+            <!-- GRÁFICO E PARÂMETROS -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Gráfico de Distribuição -->
-                <div class="bg-white p-6 rounded-xl shadow lg:col-span-2 flex flex-col justify-between">
+                <!-- Gráfico de Desempenho -->
+                <div class="bg-brand-cardBg border border-brand-cardBorder p-6 rounded-2xl shadow-xl lg:col-span-2 flex flex-col justify-between">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 class="font-bold text-brand-blue text-lg flex items-center gap-2">
-                            <i class="fa-solid fa-chart-bar text-brand-yellow"></i> Desempenho por Colaborador (Nota 0 a 10)
+                        <h3 class="font-bold text-white text-base md:text-lg flex items-center gap-2">
+                            <i class="fa-solid fa-chart-column text-brand-blueLight"></i> Desempenho por Colaborador
                         </h3>
-                        <span class="text-xs bg-brand-light px-3 py-1 rounded font-medium text-slate-600" id="label-periodo-grafico">Outubro / 2026</span>
+                        <span class="text-xs bg-slate-900 border border-slate-800 text-brand-yellow px-3 py-1 rounded-lg font-semibold" id="label-periodo-grafico">Outubro / 2026</span>
                     </div>
-                    <div class="relative h-72 w-full flex items-center justify-center" id="container-grafico">
+                    <div class="relative h-72 w-full flex items-center justify-center">
                         <canvas id="chartDesempenhoEquipe"></canvas>
                     </div>
                 </div>
 
-                <!-- Painel de Rateio & Configurações Rápidas -->
-                <div class="bg-white p-6 rounded-xl shadow flex flex-col justify-between">
+                <!-- Painel de Parâmetros Financeiros -->
+                <div class="bg-brand-cardBg border border-brand-cardBorder p-6 rounded-2xl shadow-xl flex flex-col justify-between space-y-4">
                     <div>
-                        <h3 class="font-bold text-brand-blue text-lg mb-4 flex items-center gap-2">
+                        <h3 class="font-bold text-white text-base md:text-lg mb-4 flex items-center gap-2">
                             <i class="fa-solid fa-sliders text-brand-yellow"></i> Parâmetros Financeiros
                         </h3>
                         <div class="space-y-4">
                             <div>
-                                <label class="block text-xs font-bold text-slate-600 mb-1">Valor Total do Rateio (R$):</label>
-                                <input type="number" id="input-valor-rateio" value="0.00" step="0.01" onchange="atualizarParametros()" class="w-full bg-brand-light border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold text-brand-blue focus:ring-2 focus:ring-brand-blue outline-none">
+                                <label class="block text-xs font-semibold text-slate-400 mb-1">Valor Total do Rateio (R$):</label>
+                                <input type="number" id="input-valor-rateio" value="0.00" step="0.01" onchange="atualizarParametros()" class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-2.5 text-base font-extrabold text-brand-yellow focus:ring-2 focus:ring-brand-blue outline-none shadow-inner">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-600 mb-1">Critérios de Avaliação (Max 2.0 pts cada):</label>
-                                <ul class="text-xs space-y-1 text-slate-600 bg-brand-light p-3 rounded-lg border border-slate-200">
-                                    <li><i class="fa-solid fa-check text-emerald-600 mr-1"></i> Pontualidade (Até 2.0)</li>
-                                    <li><i class="fa-solid fa-check text-emerald-600 mr-1"></i> Baixas no Sistema (Até 2.0)</li>
-                                    <li><i class="fa-solid fa-check text-emerald-600 mr-1"></i> Disciplina / Celular (Até 2.0)</li>
-                                    <li><i class="fa-solid fa-check text-emerald-600 mr-1"></i> Relacionamento (Até 2.0)</li>
-                                    <li><i class="fa-solid fa-check text-emerald-600 mr-1"></i> Assiduidade / 5S (Até 2.0)</li>
+                                <label class="block text-xs font-semibold text-slate-400 mb-1">Critérios de Avaliação (Max 2.0 pts cada):</label>
+                                <ul class="text-xs space-y-1.5 text-slate-300 bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/80">
+                                    <li class="flex items-center"><i class="fa-solid fa-check text-emerald-400 mr-2"></i> Pontualidade (Até 2.0 pts)</li>
+                                    <li class="flex items-center"><i class="fa-solid fa-check text-emerald-400 mr-2"></i> Baixas no Sistema (Até 2.0 pts)</li>
+                                    <li class="flex items-center"><i class="fa-solid fa-check text-emerald-400 mr-2"></i> Disciplina / Celular (Até 2.0 pts)</li>
+                                    <li class="flex items-center"><i class="fa-solid fa-check text-emerald-400 mr-2"></i> Relacionamento (Até 2.0 pts)</li>
+                                    <li class="flex items-center"><i class="fa-solid fa-check text-emerald-400 mr-2"></i> Assiduidade / 5S (Até 2.0 pts)</li>
                                 </ul>
                             </div>
                         </div>
                     </div>
-                    <button onclick="switchTab('relatorio-adm')" class="mt-6 w-full bg-brand-yellow hover:bg-brand-yellowHover text-brand-blue font-bold py-3 rounded-lg transition shadow flex items-center justify-center gap-2 text-sm">
-                        <i class="fa-solid fa-file-invoice-dollar"></i> Ver Relatório Administrativo
+                    <button onclick="switchTab('relatorio-adm')" class="w-full bg-brand-yellow hover:bg-brand-yellowHover text-slate-950 font-extrabold py-3 rounded-xl transition shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 text-xs md:text-sm uppercase tracking-wide">
+                        <i class="fa-solid fa-file-invoice-dollar"></i> Ir ao Relatório Financeiro
                     </button>
                 </div>
             </div>
         </section>
 
-        <!-- ABA 2: GESTÃO E NOTAS DA EQUIPE -->
+        <!-- ABA 2: GESTÃO DA EQUIPE E TABELA EDITÁVEL -->
         <section id="tab-avaliacoes" class="hidden space-y-6">
-            <div class="bg-white p-6 rounded-xl shadow">
+            <div class="bg-brand-cardBg border border-brand-cardBorder p-6 rounded-2xl shadow-xl">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                     <div>
-                        <h3 class="text-xl font-black text-brand-blue">Tabela de Notas e Avaliação da Produção</h3>
-                        <p class="text-xs text-slate-500">Adicione os colaboradores e edite as notas por critério (0 a 2.0).</p>
+                        <h3 class="text-xl font-extrabold text-white">Quadro de Desempenho e Notas</h3>
+                        <p class="text-xs text-slate-400">Insira colaboradores e atribua as notas individuais de 0.0 a 2.0 em cada quesito.</p>
                     </div>
-                    <div class="flex gap-2">
-                        <button onclick="adicionarFuncionarioModal()" class="bg-brand-blue text-white hover:bg-brand-blueDark px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-2">
-                            <i class="fa-solid fa-user-plus text-brand-yellow"></i> Novo Colaborador
+                    <div>
+                        <button onclick="adicionarFuncionarioModal()" class="bg-brand-blue hover:bg-brand-blueHover text-white px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-lg shadow-blue-600/30 flex items-center gap-2">
+                            <i class="fa-solid fa-user-plus text-brand-yellow"></i> Adicionar Colaborador
                         </button>
                     </div>
                 </div>
 
-                <!-- Tabela Editável -->
-                <div class="overflow-x-auto">
+                <!-- Tabela Editável Dark -->
+                <div class="overflow-x-auto rounded-xl border border-slate-800">
                     <table class="w-full text-left border-collapse text-xs md:text-sm">
                         <thead>
-                            <tr class="bg-brand-blue text-white">
-                                <th class="p-3 rounded-l-lg">Funcionário</th>
+                            <tr class="bg-slate-900/90 text-slate-300 font-semibold border-b border-slate-800">
+                                <th class="p-3">Funcionário</th>
                                 <th class="p-3 text-center">Pontualidade (2.0)</th>
                                 <th class="p-3 text-center">Baixas Sistema (2.0)</th>
-                                <th class="p-3 text-center">Disciplina/Celular (2.0)</th>
+                                <th class="p-3 text-center">Disciplina (2.0)</th>
                                 <th class="p-3 text-center">Relacionamento (2.0)</th>
-                                <th class="p-3 text-center">Assiduidade/5S (2.0)</th>
-                                <th class="p-3 text-center font-black text-brand-yellow">Nota (10)</th>
+                                <th class="p-3 text-center">Assiduidade (2.0)</th>
+                                <th class="p-3 text-center font-black text-brand-yellow bg-slate-950/60">Nota Final</th>
                                 <th class="p-3 text-center">Meta %</th>
                                 <th class="p-3 text-right">Valor a Pagar</th>
-                                <th class="p-3 text-center rounded-r-lg">Ações</th>
+                                <th class="p-3 text-center">Ações</th>
                             </tr>
                         </thead>
-                        <tbody id="tabela-avaliacoes-body" class="divide-y divide-slate-100">
+                        <tbody id="tabela-avaliacoes-body" class="divide-y divide-slate-800/60 bg-slate-950/30">
                             <!-- Preenchido via JS -->
                         </tbody>
                     </table>
@@ -279,43 +308,43 @@
             </div>
         </section>
 
-        <!-- ABA 3: RELATÓRIO COMPLETO (OPERACIONAL) -->
+        <!-- ABA 3: RELATÓRIO OPERACIONAL (FORMATO DE IMPRESSÃO LIMPO) -->
         <section id="tab-relatorio-completo" class="hidden space-y-6">
-            <div class="flex justify-between items-center no-print">
-                <h2 class="text-lg font-bold text-brand-blue"><i class="fa-solid fa-print mr-2"></i> Relatório Operacional Completo</h2>
-                <button onclick="window.print()" class="bg-brand-blue hover:bg-brand-blueDark text-white px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 shadow transition">
+            <div class="flex justify-between items-center no-print max-w-4xl mx-auto">
+                <h2 class="text-lg font-bold text-white"><i class="fa-solid fa-print text-brand-blueLight mr-2"></i> Relatório Operacional Completo</h2>
+                <button onclick="window.print()" class="bg-brand-blue hover:bg-brand-blueHover text-white px-4 py-2.5 rounded-xl font-bold text-xs md:text-sm flex items-center gap-2 shadow-lg shadow-blue-600/30 transition">
                     <i class="fa-solid fa-file-pdf text-brand-yellow"></i> Imprimir / Salvar PDF
                 </button>
             </div>
 
-            <!-- Documento Imprimível -->
-            <div class="bg-white p-8 rounded-xl shadow print-shadow space-y-6 max-w-4xl mx-auto border border-slate-200">
+            <!-- Documento Imprimível (Folha A4 Estilizada) -->
+            <div class="print-document bg-white text-slate-900 p-8 rounded-2xl shadow-2xl max-w-4xl mx-auto space-y-6 border border-slate-200">
                 <div class="border-b border-slate-200 pb-4 flex justify-between items-center">
                     <div>
-                        <h2 class="text-2xl font-black text-brand-blue" id="doc-empresa-nome">SUA EMPRESA AQUI</h2>
-                        <p class="text-xs text-slate-500 uppercase tracking-wider" id="doc-empresa-sub">Avaliação de Desempenho e Metas de Produção</p>
+                        <h2 class="text-2xl font-black text-slate-900 print-text-dark" id="doc-empresa-nome">SUA EMPRESA AQUI</h2>
+                        <p class="text-xs text-slate-500 uppercase tracking-wider font-semibold" id="doc-empresa-sub">Avaliação de Desempenho e Metas de Produção</p>
                     </div>
                     <div class="text-right">
-                        <span class="bg-brand-yellow/20 text-brand-blueDark font-bold px-3 py-1 rounded text-xs" id="print-mes-label">Outubro / 2026</span>
+                        <span class="bg-amber-100 text-amber-900 font-bold px-3 py-1.5 rounded-lg text-xs" id="print-mes-label">Outubro / 2026</span>
                     </div>
                 </div>
 
                 <div class="space-y-4">
-                    <h3 class="font-bold text-brand-blue text-sm uppercase bg-brand-light p-2 rounded">Resumo Geral por Integrante da Equipe</h3>
+                    <h3 class="font-bold text-slate-900 text-xs uppercase tracking-wider bg-slate-100 p-2.5 rounded-lg">Resumo Operacional por Colaborador</h3>
                     <div class="overflow-x-auto">
                         <table class="w-full text-xs text-left border border-slate-200">
-                            <thead class="bg-slate-100 text-slate-700">
+                            <thead class="bg-slate-100 text-slate-800 font-bold">
                                 <tr>
-                                    <th class="p-2 border">Funcionário</th>
-                                    <th class="p-2 border text-center">Pontualidade</th>
-                                    <th class="p-2 border text-center">Baixas Sistema</th>
-                                    <th class="p-2 border text-center">Disciplina</th>
-                                    <th class="p-2 border text-center">Relacionamento</th>
-                                    <th class="p-2 border text-center">Assiduidade</th>
-                                    <th class="p-2 border text-center font-bold text-brand-blue">Nota Final</th>
+                                    <th class="p-2.5 border">Funcionário</th>
+                                    <th class="p-2.5 border text-center">Pontualidade</th>
+                                    <th class="p-2.5 border text-center">Baixas Sistema</th>
+                                    <th class="p-2.5 border text-center">Disciplina</th>
+                                    <th class="p-2.5 border text-center">Relacionamento</th>
+                                    <th class="p-2.5 border text-center">Assiduidade</th>
+                                    <th class="p-2.5 border text-center font-extrabold text-blue-900">Nota Final</th>
                                 </tr>
                             </thead>
-                            <tbody id="rel-completo-tbody">
+                            <tbody id="rel-completo-tbody" class="divide-y divide-slate-200">
                                 <!-- Preenchido via JS -->
                             </tbody>
                         </table>
@@ -323,96 +352,95 @@
                 </div>
 
                 <!-- ASSINATURAS DINÂMICAS -->
-                <div class="grid grid-cols-2 gap-8 pt-8">
+                <div class="grid grid-cols-2 gap-12 pt-12">
                     <div class="border-t border-slate-400 pt-2 text-center">
-                        <p class="text-xs font-bold text-slate-800" id="doc-ass1-nome-view">NOME DO ASSINANTE 1</p>
+                        <p class="text-xs font-bold text-slate-900 print-text-dark" id="doc-ass1-nome-view">NOME DO ASSINANTE 1</p>
                         <p class="text-[11px] font-semibold text-slate-600" id="doc-ass1-setor-view">Cargo / Setor</p>
-                        <p class="text-[10px] text-slate-400 uppercase tracking-wider" id="doc-ass1-titulo-view">Assinatura do Responsável</p>
+                        <p class="text-[10px] text-slate-400 uppercase tracking-wider mt-1" id="doc-ass1-titulo-view">Assinatura do Responsável</p>
                     </div>
                     <div class="border-t border-slate-400 pt-2 text-center">
-                        <p class="text-xs font-bold text-slate-800" id="doc-ass2-nome-view">NOME DO ASSINANTE 2</p>
+                        <p class="text-xs font-bold text-slate-900 print-text-dark" id="doc-ass2-nome-view">NOME DO ASSINANTE 2</p>
                         <p class="text-[11px] font-semibold text-slate-600" id="doc-ass2-setor-view">Cargo / Setor</p>
-                        <p class="text-[10px] text-slate-400 uppercase tracking-wider" id="doc-ass2-titulo-view">Visto Conferido</p>
+                        <p class="text-[10px] text-slate-400 uppercase tracking-wider mt-1" id="doc-ass2-titulo-view">Visto Conferido</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- ABA 4: RELATÓRIO OTIMIZADO (ADMINISTRATIVO) -->
+        <!-- ABA 4: RELATÓRIO ADMINISTRATIVO / FINANCEIRO -->
         <section id="tab-relatorio-adm" class="hidden space-y-6">
-            <div class="flex justify-between items-center no-print">
-                <h2 class="text-lg font-bold text-brand-blue"><i class="fa-solid fa-file-invoice-dollar mr-2"></i> Relatório Otimizado (Administrativo / Financeiro)</h2>
-                <button onclick="window.print()" class="bg-brand-blue hover:bg-brand-blueDark text-white px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 shadow transition">
+            <div class="flex justify-between items-center no-print max-w-4xl mx-auto">
+                <h2 class="text-lg font-bold text-white"><i class="fa-solid fa-file-invoice-dollar text-brand-yellow mr-2"></i> Relatório Financeiro e Administrativo</h2>
+                <button onclick="window.print()" class="bg-brand-blue hover:bg-brand-blueHover text-white px-4 py-2.5 rounded-xl font-bold text-xs md:text-sm flex items-center gap-2 shadow-lg shadow-blue-600/30 transition">
                     <i class="fa-solid fa-file-pdf text-brand-yellow"></i> Imprimir / Salvar PDF
                 </button>
             </div>
 
             <!-- Documento Imprimível Administrativo -->
-            <div class="bg-white p-8 rounded-xl shadow print-shadow space-y-6 max-w-4xl mx-auto border border-slate-200">
+            <div class="print-document bg-white text-slate-900 p-8 rounded-2xl shadow-2xl max-w-4xl mx-auto space-y-6 border border-slate-200">
                 <div class="border-b border-slate-200 pb-4 flex justify-between items-center">
                     <div>
-                        <h2 class="text-2xl font-black text-brand-blue" id="doc-adm-empresa-nome">SUA EMPRESA AQUI</h2>
-                        <p class="text-xs text-slate-500 uppercase tracking-wider" id="print-adm-subtitulo">Fechamento de Rateio e Desempenho</p>
+                        <h2 class="text-2xl font-black text-slate-900 print-text-dark" id="doc-adm-empresa-nome">SUA EMPRESA AQUI</h2>
+                        <p class="text-xs text-slate-500 uppercase tracking-wider font-semibold" id="print-adm-subtitulo">Fechamento de Rateio e Desempenho</p>
                     </div>
                     <div class="text-right">
-                        <span class="bg-brand-blue text-brand-yellow font-bold px-3 py-1 rounded text-xs">Administrativo & RH</span>
+                        <span class="bg-blue-900 text-white font-bold px-3 py-1.5 rounded-lg text-xs">Administrativo & RH</span>
                     </div>
                 </div>
 
-                <div class="bg-brand-light p-4 rounded-lg flex flex-wrap justify-between items-center gap-4 text-sm">
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
                     <div>
-                        <span class="text-slate-500 text-xs block">Valor Total Rateio:</span>
-                        <span class="font-bold text-brand-blue text-lg" id="rel-adm-total-rateio">R$ 0,00</span>
+                        <span class="text-slate-500 block">Valor Total Rateio:</span>
+                        <span class="font-extrabold text-blue-950 text-base" id="rel-adm-total-rateio">R$ 0,00</span>
                     </div>
                     <div>
-                        <span class="text-slate-500 text-xs block">Nº Funcionários:</span>
-                        <span class="font-bold text-brand-blue text-lg" id="rel-adm-num-func">0</span>
+                        <span class="text-slate-500 block">Nº Funcionários:</span>
+                        <span class="font-extrabold text-blue-950 text-base" id="rel-adm-num-func">0</span>
                     </div>
                     <div>
-                        <span class="text-slate-500 text-xs block">Valor Base por Pessoa:</span>
-                        <span class="font-bold text-brand-blue text-lg" id="rel-adm-base-pessoa">R$ 0,00</span>
+                        <span class="text-slate-500 block">Valor Base / Pessoa:</span>
+                        <span class="font-extrabold text-blue-950 text-base" id="rel-adm-base-pessoa">R$ 0,00</span>
                     </div>
                     <div>
-                        <span class="text-slate-500 text-xs block">Total a Pagar Final:</span>
-                        <span class="font-bold text-emerald-700 text-lg" id="rel-adm-total-pagar">R$ 0,00</span>
+                        <span class="text-slate-500 block">Total a Pagar Final:</span>
+                        <span class="font-extrabold text-emerald-700 text-base" id="rel-adm-total-pagar">R$ 0,00</span>
                     </div>
                 </div>
 
                 <div class="space-y-4">
-                    <h3 class="font-bold text-brand-blue text-sm uppercase">Demonstrativo de Pagamento Individual</h3>
+                    <h3 class="font-bold text-slate-900 text-xs uppercase tracking-wider">Demonstrativo de Pagamento Individual</h3>
                     <div class="overflow-x-auto">
                         <table class="w-full text-xs text-left border border-slate-200">
-                            <thead class="bg-brand-blue text-white">
+                            <thead class="bg-blue-950 text-white font-bold">
                                 <tr>
-                                    <th class="p-2.5 border">Funcionário</th>
-                                    <th class="p-2.5 border text-center">Nota (0-10)</th>
-                                    <th class="p-2.5 border text-center">Meta Atingida (%)</th>
-                                    <th class="p-2.5 border text-right">Valor Base (R$)</th>
-                                    <th class="p-2.5 border text-right font-bold text-brand-yellow">Á Pagar (R$)</th>
+                                    <th class="p-2.5 border border-blue-900">Funcionário</th>
+                                    <th class="p-2.5 border border-blue-900 text-center">Nota (0-10)</th>
+                                    <th class="p-2.5 border border-blue-900 text-center">Meta Atingida (%)</th>
+                                    <th class="p-2.5 border border-blue-900 text-right">Valor Base (R$)</th>
+                                    <th class="p-2.5 border border-blue-900 text-right font-extrabold text-amber-300">A Pagar (R$)</th>
                                 </tr>
                             </thead>
-                            <tbody id="rel-adm-tbody" class="divide-y divide-slate-100">
+                            <tbody id="rel-adm-tbody" class="divide-y divide-slate-200">
                                 <!-- Preenchido via JS -->
                             </tbody>
                         </table>
                     </div>
                 </div>
 
-                <!-- ASSINATURAS E OBSERVAÇÕES NA ÁREA ADM -->
-                <div class="border-t border-slate-300 pt-6 flex flex-col md:flex-row justify-between items-end gap-6 text-xs">
+                <div class="border-t border-slate-300 pt-8 flex flex-col md:flex-row justify-between items-end gap-6 text-xs">
                     <div>
-                        <p class="font-bold text-slate-700 mb-1">Observações do Fechamento:</p>
-                        <p class="text-slate-500 italic">Cálculo baseado no índice de pontuação da produção nas 5 categorias estipuladas.</p>
+                        <p class="font-bold text-slate-800 mb-1">Observações do Fechamento:</p>
+                        <p class="text-slate-500 italic">Cálculo proporcional baseado na soma dos índices de desempenho auditados.</p>
                     </div>
-                    <div class="grid grid-cols-2 gap-6 w-full md:w-auto">
+                    <div class="grid grid-cols-2 gap-8 w-full md:w-auto">
                         <div class="text-center">
                             <div class="border-b border-slate-400 w-36 mb-1 mx-auto"></div>
-                            <p class="font-bold text-slate-800 text-[11px]" id="doc-adm-ass1-nome">Signatário 1</p>
+                            <p class="font-bold text-slate-900 text-[11px]" id="doc-adm-ass1-nome">Signatário 1</p>
                             <p class="text-[9px] text-slate-500" id="doc-adm-ass1-setor">Setor / Cargo</p>
                         </div>
                         <div class="text-center">
                             <div class="border-b border-slate-400 w-36 mb-1 mx-auto"></div>
-                            <p class="font-bold text-slate-800 text-[11px]" id="doc-adm-ass2-nome">Signatário 2</p>
+                            <p class="font-bold text-slate-900 text-[11px]" id="doc-adm-ass2-nome">Signatário 2</p>
                             <p class="text-[9px] text-slate-500" id="doc-adm-ass2-setor">Setor / Cargo</p>
                         </div>
                     </div>
@@ -422,59 +450,59 @@
 
     </main>
 
-    <!-- MODAL NOVO FUNCIONÁRIO -->
-    <div id="modal-funcionario" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
-            <h3 class="text-lg font-bold text-brand-blue flex items-center gap-2">
+    <!-- MODAL NOVO FUNCIONÁRIO (DARK GLASS) -->
+    <div id="modal-funcionario" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-brand-cardBg border border-brand-cardBorder rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-4">
+            <h3 class="text-lg font-extrabold text-white flex items-center gap-2">
                 <i class="fa-solid fa-user-plus text-brand-yellow"></i> Adicionar Colaborador
             </h3>
             <div class="space-y-3">
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1">Nome Completo:</label>
-                    <input type="text" id="novo-nome" class="w-full bg-brand-light border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-blue" placeholder="Ex: Carlos Silva">
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Nome Completo:</label>
+                    <input type="text" id="novo-nome" class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-2 text-sm text-white outline-none focus:ring-2 focus:ring-brand-blue" placeholder="Ex: Carlos Silva">
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1">Pontualidade (0-2):</label>
-                        <input type="number" id="novo-c1" value="2" min="0" max="2" step="0.5" class="w-full bg-brand-light border border-slate-300 rounded-lg px-3 py-2 text-sm">
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Pontualidade (0-2):</label>
+                        <input type="number" id="novo-c1" value="2" min="0" max="2" step="0.5" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1">Baixas Sistema (0-2):</label>
-                        <input type="number" id="novo-c2" value="2" min="0" max="2" step="0.5" class="w-full bg-brand-light border border-slate-300 rounded-lg px-3 py-2 text-sm">
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Baixas Sistema (0-2):</label>
+                        <input type="number" id="novo-c2" value="2" min="0" max="2" step="0.5" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1">Disciplina/Celular (0-2):</label>
-                        <input type="number" id="novo-c3" value="2" min="0" max="2" step="0.5" class="w-full bg-brand-light border border-slate-300 rounded-lg px-3 py-2 text-sm">
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Disciplina (0-2):</label>
+                        <input type="number" id="novo-c3" value="2" min="0" max="2" step="0.5" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1">Relacionamento (0-2):</label>
-                        <input type="number" id="novo-c4" value="2" min="0" max="2" step="0.5" class="w-full bg-brand-light border border-slate-300 rounded-lg px-3 py-2 text-sm">
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Relacionamento (0-2):</label>
+                        <input type="number" id="novo-c4" value="2" min="0" max="2" step="0.5" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white">
                     </div>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1">Assiduidade/5S (0-2):</label>
-                    <input type="number" id="novo-c5" value="2" min="0" max="2" step="0.5" class="w-full bg-brand-light border border-slate-300 rounded-lg px-3 py-2 text-sm">
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Assiduidade/5S (0-2):</label>
+                    <input type="number" id="novo-c5" value="2" min="0" max="2" step="0.5" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white">
                 </div>
             </div>
-            <div class="flex justify-end gap-2 pt-4">
-                <button onclick="fecharModal()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 rounded-lg text-xs font-bold text-slate-700">Cancelar</button>
-                <button onclick="salvarNovoFuncionario()" class="px-4 py-2 bg-brand-blue hover:bg-brand-blueDark text-white rounded-lg text-xs font-bold">Salvar Colaborador</button>
+            <div class="flex justify-end gap-2 pt-4 border-t border-slate-800">
+                <button onclick="fecharModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-xs font-bold text-slate-300">Cancelar</button>
+                <button onclick="salvarNovoFuncionario()" class="px-4 py-2 bg-brand-blue hover:bg-brand-blueHover text-white rounded-xl text-xs font-bold shadow-lg shadow-blue-600/30">Salvar Colaborador</button>
             </div>
         </div>
     </div>
 
-    <!-- SCRIPT DE GERENCIAMENTO E CÁLCULOS -->
+    <!-- SCRIPT DE GERENCIAMENTO E LÓGICA -->
     <script>
         let periodoAtual = "2026-10";
         let chartInstance = null;
 
-        // Configuração Padrão de Empresa (Zera/Limpas para personalização do cliente)
+        // Configuração Padrão da Empresa
         let configEmpresa = {
             nome: "Sua Empresa S.A.",
             subtitulo: "Avaliação de Desempenho e Metas de Produção",
             ass1Nome: "Nome do Supervisor",
             ass1Setor: "Supervisão Operacional",
-            ass1Titulo: "Assinatura do Supervisor",
+            ass1Titulo: "Assinatura do Responsável",
             ass2Nome: "Nome do Gerente",
             ass2Setor: "Gerência Geral / RH",
             ass2Titulo: "Visto Conferido"
@@ -543,7 +571,6 @@
             }
         }
 
-        // Obtém dados limpos/zerados para novos clientes
         function obterDadosPeriodo(periodo) {
             const salvo = localStorage.getItem(`dockmaker_relatorios_${periodo}`);
             if (salvo) {
@@ -576,12 +603,15 @@
         function switchTab(tabId) {
             ['dashboard', 'avaliacoes', 'relatorio-completo', 'relatorio-adm'].forEach(t => {
                 document.getElementById(`tab-${t}`).classList.add('hidden');
-                document.getElementById(`btn-tab-${t}`).classList.remove('bg-brand-yellow', 'text-brand-blue');
-                document.getElementById(`btn-tab-${t}`).classList.add('bg-brand-blue/50', 'text-white');
+                const btn = document.getElementById(`btn-tab-${t}`);
+                btn.classList.remove('bg-brand-blue', 'text-white', 'shadow-lg');
+                btn.classList.add('bg-slate-900/80', 'text-slate-400');
             });
+            
             document.getElementById(`tab-${tabId}`).classList.remove('hidden');
-            document.getElementById(`btn-tab-${tabId}`).classList.remove('bg-brand-blue/50', 'text-white');
-            document.getElementById(`btn-tab-${tabId}`).classList.add('bg-brand-yellow', 'text-brand-blue');
+            const activeBtn = document.getElementById(`btn-tab-${tabId}`);
+            activeBtn.classList.remove('bg-slate-900/80', 'text-slate-400');
+            activeBtn.classList.add('bg-brand-blue', 'text-white', 'shadow-lg');
 
             if(tabId === 'dashboard') renderChart();
         }
@@ -626,30 +656,30 @@
             tbodyEval.innerHTML = '';
 
             if (dados.calcList.length === 0) {
-                tbodyEval.innerHTML = `<tr><td colspan="10" class="p-6 text-center text-slate-400 italic">Nenhum colaborador adicionado para este mês. Clique em "Novo Colaborador" acima.</td></tr>`;
+                tbodyEval.innerHTML = `<tr><td colspan="10" class="p-6 text-center text-slate-500 italic">Nenhum colaborador adicionado para este mês. Clique em "Adicionar Colaborador" acima.</td></tr>`;
             } else {
                 dados.calcList.forEach((f) => {
                     const isReadOnly = periodoAtual === 'todos' ? 'disabled' : '';
                     tbodyEval.innerHTML += `
-                        <tr class="hover:bg-brand-light transition">
-                            <td class="p-3 font-bold text-brand-blue">${f.nome}</td>
-                            <td class="p-3 text-center"><input type="number" min="0" max="2" step="0.5" value="${f.c1}" ${isReadOnly} onchange="atualizarNota(${f.id}, 'c1', this.value)" class="w-16 text-center border rounded bg-white py-1"></td>
-                            <td class="p-3 text-center"><input type="number" min="0" max="2" step="0.5" value="${f.c2}" ${isReadOnly} onchange="atualizarNota(${f.id}, 'c2', this.value)" class="w-16 text-center border rounded bg-white py-1"></td>
-                            <td class="p-3 text-center"><input type="number" min="0" max="2" step="0.5" value="${f.c3}" ${isReadOnly} onchange="atualizarNota(${f.id}, 'c3', this.value)" class="w-16 text-center border rounded bg-white py-1"></td>
-                            <td class="p-3 text-center"><input type="number" min="0" max="2" step="0.5" value="${f.c4}" ${isReadOnly} onchange="atualizarNota(${f.id}, 'c4', this.value)" class="w-16 text-center border rounded bg-white py-1"></td>
-                            <td class="p-3 text-center"><input type="number" min="0" max="2" step="0.5" value="${f.c5}" ${isReadOnly} onchange="atualizarNota(${f.id}, 'c5', this.value)" class="w-16 text-center border rounded bg-white py-1"></td>
-                            <td class="p-3 text-center font-black text-brand-blue bg-brand-yellow/10">${f.nota.toFixed(1)}</td>
-                            <td class="p-3 text-center font-semibold text-slate-600">${f.percentualMeta.toFixed(0)}%</td>
-                            <td class="p-3 text-right font-bold text-emerald-700">R$ ${f.valorPagar.toFixed(2).replace('.', ',')}</td>
+                        <tr class="hover:bg-slate-900/60 transition-colors">
+                            <td class="p-3 font-bold text-white">${f.nome}</td>
+                            <td class="p-3 text-center"><input type="number" min="0" max="2" step="0.5" value="${f.c1}" ${isReadOnly} onchange="atualizarNota(${f.id}, 'c1', this.value)" class="w-14 text-center border border-slate-700 rounded bg-slate-900 text-white py-1 text-xs"></td>
+                            <td class="p-3 text-center"><input type="number" min="0" max="2" step="0.5" value="${f.c2}" ${isReadOnly} onchange="atualizarNota(${f.id}, 'c2', this.value)" class="w-14 text-center border border-slate-700 rounded bg-slate-900 text-white py-1 text-xs"></td>
+                            <td class="p-3 text-center"><input type="number" min="0" max="2" step="0.5" value="${f.c3}" ${isReadOnly} onchange="atualizarNota(${f.id}, 'c3', this.value)" class="w-14 text-center border border-slate-700 rounded bg-slate-900 text-white py-1 text-xs"></td>
+                            <td class="p-3 text-center"><input type="number" min="0" max="2" step="0.5" value="${f.c4}" ${isReadOnly} onchange="atualizarNota(${f.id}, 'c4', this.value)" class="w-14 text-center border border-slate-700 rounded bg-slate-900 text-white py-1 text-xs"></td>
+                            <td class="p-3 text-center"><input type="number" min="0" max="2" step="0.5" value="${f.c5}" ${isReadOnly} onchange="atualizarNota(${f.id}, 'c5', this.value)" class="w-14 text-center border border-slate-700 rounded bg-slate-900 text-white py-1 text-xs"></td>
+                            <td class="p-3 text-center font-black text-brand-yellow bg-slate-900/80">${f.nota.toFixed(1)}</td>
+                            <td class="p-3 text-center font-medium text-slate-300">${f.percentualMeta.toFixed(0)}%</td>
+                            <td class="p-3 text-right font-bold text-emerald-400">R$ ${f.valorPagar.toFixed(2).replace('.', ',')}</td>
                             <td class="p-3 text-center">
-                                ${periodoAtual !== 'todos' ? `<button onclick="removerFuncionario(${f.id})" class="text-rose-500 hover:text-rose-700 p-1" title="Excluir Colaborador"><i class="fa-solid fa-trash-can"></i></button>` : '<span class="text-xs text-slate-400">N/A</span>'}
+                                ${periodoAtual !== 'todos' ? `<button onclick="removerFuncionario(${f.id})" class="text-rose-400 hover:text-rose-300 p-1 transition" title="Excluir Colaborador"><i class="fa-solid fa-trash-can"></i></button>` : '<span class="text-xs text-slate-500">N/A</span>'}
                             </td>
                         </tr>
                     `;
                 });
             }
 
-            // Relatório Completo
+            // Relatório Operacional
             const tbodyRelC = document.getElementById('rel-completo-tbody');
             tbodyRelC.innerHTML = '';
             if (dados.calcList.length === 0) {
@@ -658,13 +688,13 @@
                 dados.calcList.forEach(f => {
                     tbodyRelC.innerHTML += `
                         <tr>
-                            <td class="p-2 border font-bold text-slate-800">${f.nome}</td>
-                            <td class="p-2 border text-center">${f.c1}</td>
-                            <td class="p-2 border text-center">${f.c2}</td>
-                            <td class="p-2 border text-center">${f.c3}</td>
-                            <td class="p-2 border text-center">${f.c4}</td>
-                            <td class="p-2 border text-center">${f.c5}</td>
-                            <td class="p-2 border text-center font-black text-brand-blue">${f.nota.toFixed(1)}</td>
+                            <td class="p-2.5 border font-bold text-slate-900">${f.nome}</td>
+                            <td class="p-2.5 border text-center">${f.c1}</td>
+                            <td class="p-2.5 border text-center">${f.c2}</td>
+                            <td class="p-2.5 border text-center">${f.c3}</td>
+                            <td class="p-2.5 border text-center">${f.c4}</td>
+                            <td class="p-2.5 border text-center">${f.c5}</td>
+                            <td class="p-2.5 border text-center font-black text-blue-900">${f.nota.toFixed(1)}</td>
                         </tr>
                     `;
                 });
@@ -684,7 +714,7 @@
                 dados.calcList.forEach(f => {
                     tbodyRelAdm.innerHTML += `
                         <tr>
-                            <td class="p-2.5 border font-bold text-slate-800">${f.nome}</td>
+                            <td class="p-2.5 border font-bold text-slate-900">${f.nome}</td>
                             <td class="p-2.5 border text-center font-bold">${f.nota.toFixed(1)}</td>
                             <td class="p-2.5 border text-center font-semibold">${f.percentualMeta.toFixed(0)}%</td>
                             <td class="p-2.5 border text-right">R$ ${dados.valorBasePessoa.toFixed(2).replace('.', ',')}</td>
@@ -775,7 +805,7 @@
 
             if(chartInstance) chartInstance.destroy();
 
-            const labels = dados.calcList.length > 0 ? dados.calcList.map(f => f.nome) : ['Sem dados'];
+            const labels = dados.calcList.length > 0 ? dados.calcList.map(f => f.nome) : ['Sem colaboradores'];
             const chartData = dados.calcList.length > 0 ? dados.calcList.map(f => f.nota) : [0];
 
             chartInstance = new Chart(ctx, {
@@ -785,17 +815,37 @@
                     datasets: [{
                         label: 'Nota de Desempenho (0 a 10)',
                         data: chartData,
-                        backgroundColor: '#0A2540',
-                        borderRadius: 6
+                        backgroundColor: '#3b82f6',
+                        hoverBackgroundColor: '#f59e0b',
+                        borderRadius: 8,
+                        borderSkipped: false
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
-                        y: { beginAtZero: true, max: 10 }
+                        y: { 
+                            beginAtZero: true, 
+                            max: 10,
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#94a3b8' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#cbd5e1' }
+                        }
                     },
-                    plugins: { legend: { display: false } }
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#0f172a',
+                            titleColor: '#f59e0b',
+                            bodyColor: '#fff',
+                            borderColor: '#1e293b',
+                            borderWidth: 1
+                        }
+                    }
                 }
             });
         }
